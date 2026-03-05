@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, UserRole } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Shield, User, Mail, Lock, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import type { UserRole } from '@/types';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -24,7 +23,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(name, email, password, role);
-      toast.success('Account created!');
+      toast.success('Account created! Check your email to verify.');
       navigate('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Registration failed');
@@ -35,11 +34,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 grid-pattern">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="card-glow rounded-2xl p-8">
           <div className="mb-6 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary">
@@ -74,9 +69,7 @@ export default function Register() {
             <div>
               <Label>Role</Label>
               <Select value={role} onValueChange={(v: UserRole) => setRole(v)}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="voter">Voter</SelectItem>
                   <SelectItem value="admin">Admin (Election Authority)</SelectItem>

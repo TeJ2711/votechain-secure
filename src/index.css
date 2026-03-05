@@ -59,6 +59,38 @@
 
     font-family: 'Space Grotesk', system-ui, sans-serif;
   }
+
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 220 20% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+    --primary: 190 95% 38%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 93%;
+    --secondary-foreground: 220 16% 30%;
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 12% 45%;
+    --accent: 260 70% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 190 95% 38%;
+    --success: 160 84% 32%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 100%;
+    --cyber-glow: 190 95% 38%;
+    --neon-purple: 260 70% 55%;
+    --gradient-primary: linear-gradient(135deg, hsl(190 95% 38%), hsl(260 70% 55%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 20% 97%));
+    --shadow-glow: 0 4px 20px hsl(190 95% 38% / 0.1);
+    --shadow-glow-strong: 0 8px 30px hsl(190 95% 38% / 0.15);
+  }
 }
 
 @layer base {

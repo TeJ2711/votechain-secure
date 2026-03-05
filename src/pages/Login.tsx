@@ -22,8 +22,8 @@ export default function Login() {
       await login(email, password);
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch {
-      toast.error('Invalid credentials');
+    } catch (err: any) {
+      toast.error(err.message || 'Invalid credentials');
     } finally {
       setLoading(false);
     }
@@ -31,11 +31,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 grid-pattern">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="card-glow rounded-2xl p-8">
           <div className="mb-6 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary">
@@ -50,30 +46,14 @@ export default function Login() {
               <Label htmlFor="email">Email</Label>
               <div className="relative mt-1.5">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" required />
               </div>
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
               <div className="relative mt-1.5">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+                <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" required />
               </div>
             </div>
             <Button type="submit" className="w-full bg-gradient-primary text-primary-foreground" disabled={loading}>
@@ -82,16 +62,7 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="mt-6 rounded-lg border border-border/50 bg-secondary/50 p-3">
-            <p className="text-xs font-medium text-muted-foreground mb-2">Demo Accounts:</p>
-            <div className="space-y-1 text-xs text-muted-foreground font-mono">
-              <p>voter@demo.com / demo123</p>
-              <p>admin@demo.com / demo123</p>
-              <p>auditor@demo.com / demo123</p>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             Don't have an account?{' '}
             <Link to="/register" className="text-primary hover:underline">Register</Link>
           </p>
