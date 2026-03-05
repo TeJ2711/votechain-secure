@@ -1,21 +1,23 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Shield, LogOut, User, Wallet } from 'lucide-react';
+import { Shield, LogOut, User, Wallet, Sun, Moon } from 'lucide-react';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function Navbar() {
   const { user, logout, connectWallet: setWallet } = useAuth();
   const navigate = useNavigate();
   const [connecting, setConnecting] = useState(false);
+  const { theme, toggle } = useTheme();
 
   const handleConnectWallet = async () => {
     setConnecting(true);
     try {
       const address = await connectWallet();
-      setWallet(address);
+      await setWallet(address);
       toast.success('Wallet connected!');
     } catch {
       toast.error('Failed to connect wallet');
@@ -24,8 +26,8 @@ export default function Navbar() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -42,6 +44,10 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={toggle} className="shrink-0">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+
           {user ? (
             <>
               {user.walletAddress ? (
@@ -50,13 +56,7 @@ export default function Navbar() {
                   {shortenAddress(user.walletAddress)}
                 </div>
               ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleConnectWallet}
-                  disabled={connecting}
-                  className="hidden sm:flex"
-                >
+                <Button variant="outline" size="sm" onClick={handleConnectWallet} disabled={connecting} className="hidden sm:flex">
                   <Wallet className="mr-2 h-4 w-4" />
                   {connecting ? 'Connecting...' : 'Connect Wallet'}
                 </Button>

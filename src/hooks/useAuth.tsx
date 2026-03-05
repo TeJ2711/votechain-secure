@@ -1,82 +1,127 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { User, UserRole } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+
+export type UserRole = 'voter' | 'admin' | 'auditor';
+
+export interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  walletAddress?: string;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: AppUser | null;
+  session: Session | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
-  logout: () => void;
-  connectWallet: (address: string) => void;
+  logout: () => Promise<void>;
+  connectWallet: (address: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Demo users for prototype
-const DEMO_USERS: Record<string, User & { password: string }> = {
-  'voter@demo.com': { id: 'v1', name: 'Alex Johnson', email: 'voter@demo.com', role: 'voter', password: 'demo123' },
-  'admin@demo.com': { id: 'a1', name: 'Sarah Admin', email: 'admin@demo.com', role: 'admin', password: 'demo123' },
-  'auditor@demo.com': { id: 'au1', name: 'James Observer', email: 'auditor@demo.com', role: 'auditor', password: 'demo123' },
-};
+async function fetchAppUser(supabaseUser: SupabaseUser): Promise<AppUser | null> {
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('user_id', supabaseUser.id)
+    .single();
+
+  // Fetch role
+  const { data: roles } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', supabaseUser.id);
+
+  const role = (roles && roles.length > 0 ? roles[0].role : 'voter') as UserRole;
+
+  return {
+    id: supabaseUser.id,
+    name: profile?.name || supabaseUser.user_metadata?.name || '',
+    email: supabaseUser.email || '',
+    role,
+    walletAddress: profile?.wallet_address || undefined,
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const saved = localStorage.getItem('votelytics_user');
-    if (saved) setUser(JSON.parse(saved));
-    setIsLoading(false);
+    // Set up auth listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      if (session?.user) {
+        // Use setTimeout to avoid potential deadlocks with Supabase
+        setTimeout(async () => {
+          const appUser = await fetchAppUser(session.user);
+          setUser(appUser);
+          setIsLoading(false);
+        }, 0);
+      } else {
+        setUser(null);
+        setIsLoading(false);
+      }
+    });
+
+    // Then check existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        fetchAppUser(session.user).then(appUser => {
+          setUser(appUser);
+          setIsLoading(false);
+        });
+      } else {
+        setIsLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
-    await new Promise(r => setTimeout(r, 800));
-    const demo = DEMO_USERS[email];
-    if (demo && demo.password === password) {
-      const { password: _, ...userData } = demo;
-      setUser(userData);
-      localStorage.setItem('votelytics_user', JSON.stringify(userData));
-      return;
-    }
-    // Check registered users
-    const registered = localStorage.getItem(`votelytics_reg_${email}`);
-    if (registered) {
-      const regUser = JSON.parse(registered);
-      if (regUser.password === password) {
-        const { password: _, ...userData } = regUser;
-        setUser(userData);
-        localStorage.setItem('votelytics_user', JSON.stringify(userData));
-        return;
-      }
-    }
-    throw new Error('Invalid credentials');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
   const register = async (name: string, email: string, password: string, role: UserRole) => {
-    await new Promise(r => setTimeout(r, 800));
-    if (DEMO_USERS[email]) throw new Error('Email already exists');
-    const newUser = { id: crypto.randomUUID(), name, email, role, password };
-    localStorage.setItem(`votelytics_reg_${email}`, JSON.stringify(newUser));
-    const { password: _, ...userData } = newUser;
-    setUser(userData);
-    localStorage.setItem('votelytics_user', JSON.stringify(userData));
-  };
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },
+    });
+    if (error) throw error;
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('votelytics_user');
-  };
-
-  const connectWallet = (address: string) => {
-    if (user) {
-      const updated = { ...user, walletAddress: address };
-      setUser(updated);
-      localStorage.setItem('votelytics_user', JSON.stringify(updated));
+    // If user was created and we need a non-default role, update it
+    if (data.user && role !== 'voter') {
+      // The trigger creates a 'voter' role by default
+      // For admin/auditor, we update the role (in production, this would be admin-only)
+      await supabase.from('user_roles').update({ role }).eq('user_id', data.user.id);
     }
   };
 
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+  };
+
+  const connectWallet = async (address: string) => {
+    if (!user) return;
+    await supabase.from('profiles').update({ wallet_address: address }).eq('user_id', user.id);
+    setUser(prev => prev ? { ...prev, walletAddress: address } : null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, connectWallet }}>
+    <AuthContext.Provider value={{ user, session, isLoading, login, register, logout, connectWallet }}>
       {children}
     </AuthContext.Provider>
   );
