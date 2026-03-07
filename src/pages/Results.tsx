@@ -4,8 +4,12 @@ import { mockElections, mockCandidates } from '@/lib/mock-data';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Trophy, Users, Vote, TrendingUp, ExternalLink } from 'lucide-react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ArrowLeft, Trophy, Users, Vote, TrendingUp, ExternalLink, BarChart3 } from 'lucide-react';
+import {
+  PieChart, Pie, Cell,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  RadialBarChart, RadialBar, Legend,
+} from 'recharts';
 import { useMemo } from 'react';
 
 const COLORS = [
@@ -25,7 +29,6 @@ export default function Results() {
   const { data: dbCandidates } = useCandidates(id || '');
   const { data: dbVotes } = useElectionVotes(id || '');
 
-  // Fallback to mock data
   const mockElection = mockElections.find(e => e.id === id);
 
   const election = dbElection
@@ -34,29 +37,24 @@ export default function Results() {
         description: dbElection.description || '',
         status: dbElection.status,
         endDate: dbElection.end_date,
+        totalVoters: 0,
       }
     : mockElection
-    ? { title: mockElection.title, description: mockElection.description, status: mockElection.status, endDate: mockElection.endDate }
+    ? { title: mockElection.title, description: mockElection.description, status: mockElection.status, endDate: mockElection.endDate, totalVoters: mockElection.totalVoters || 0 }
     : null;
 
-  // Compute vote counts per candidate from actual votes
-  const { chartData, totalVotes, winner } = useMemo(() => {
+  const { chartData, totalVotes, winner, turnoutPercent } = useMemo(() => {
     const mockCands = mockCandidates[id || ''] || [];
     const cands = dbCandidates && dbCandidates.length > 0 ? dbCandidates : mockCands;
     const votes = dbVotes || [];
 
-    // Count votes per candidate
     const voteCounts: Record<string, number> = {};
     cands.forEach(c => (voteCounts[c.id] = 0));
     votes.forEach(v => {
-      if (voteCounts[v.candidate_id] !== undefined) {
-        voteCounts[v.candidate_id]++;
-      }
+      if (voteCounts[v.candidate_id] !== undefined) voteCounts[v.candidate_id]++;
     });
 
-    // If using mock data and no real votes, use mock vote counts
     const useMockCounts = (!dbCandidates || dbCandidates.length === 0) && votes.length === 0;
-
     const total = useMockCounts
       ? mockCands.reduce((a, c) => a + (c.voteCount || 0), 0)
       : votes.length;
@@ -73,9 +71,11 @@ export default function Results() {
     });
 
     const w = data.length > 0 ? data.reduce((a, b) => (a.votes > b.votes ? a : b)) : null;
+    const eligibleVoters = election?.totalVoters || Math.max(total * 1.4, 100);
+    const turnout = Math.round((total / eligibleVoters) * 100);
 
-    return { chartData: data, totalVotes: total, winner: w };
-  }, [id, dbCandidates, dbVotes]);
+    return { chartData: data, totalVotes: total, winner: w, turnoutPercent: turnout };
+  }, [id, dbCandidates, dbVotes, election?.totalVoters]);
 
   if (!election) {
     return (
@@ -86,8 +86,12 @@ export default function Results() {
     );
   }
 
+  const turnoutData = [
+    { name: 'Turnout', value: turnoutPercent, fill: 'hsl(190, 95%, 50%)' },
+  ];
+
   return (
-    <div className="container py-8 max-w-4xl">
+    <div className="container py-8 max-w-5xl">
       <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" /> Back
       </Button>
@@ -126,12 +130,13 @@ export default function Results() {
           </motion.div>
         )}
 
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { icon: Vote, label: 'Total Votes', value: totalVotes.toLocaleString() },
             { icon: Users, label: 'Candidates', value: chartData.length },
             { icon: TrendingUp, label: 'Leader', value: winner ? `${winner.percentage}%` : 'N/A' },
+            { icon: BarChart3, label: 'Turnout', value: `${turnoutPercent}%` },
           ].map(s => (
             <div key={s.label} className="card-glow rounded-xl p-4 text-center">
               <s.icon className="h-5 w-5 text-primary mx-auto mb-2" />
@@ -142,56 +147,39 @@ export default function Results() {
         </div>
 
         {chartData.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 mb-8">
-            {/* Pie Chart */}
+          <div className="grid gap-6 md:grid-cols-3 mb-8">
+            {/* Pie Chart - Vote Distribution */}
             <div className="card-glow rounded-xl p-6">
               <h3 className="font-semibold mb-4">Vote Distribution</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={90}
-                    dataKey="votes"
-                    label={({ name, percentage }) => `${name.split(' ')[0]} ${percentage}%`}
-                  >
+                  <Pie data={chartData} cx="50%" cy="50%" outerRadius={85} dataKey="votes"
+                    label={({ name, percentage }) => `${name.split(' ')[0]} ${percentage}%`}>
                     {chartData.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(220, 18%, 8%)',
-                      border: '1px solid hsl(220, 16%, 16%)',
-                      borderRadius: '8px',
-                      color: 'hsl(210, 20%, 92%)',
-                    }}
-                  />
+                  <Tooltip contentStyle={{
+                    backgroundColor: 'hsl(220, 18%, 8%)', border: '1px solid hsl(220, 16%, 16%)',
+                    borderRadius: '8px', color: 'hsl(210, 20%, 92%)',
+                  }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Bar Chart */}
+            {/* Bar Chart - Vote Count */}
             <div className="card-glow rounded-xl p-6">
               <h3 className="font-semibold mb-4">Vote Count</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 16%, 16%)" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fill: 'hsl(215, 12%, 50%)', fontSize: 12 }}
-                    tickFormatter={v => v.split(' ')[0]}
-                  />
+                  <XAxis dataKey="name" tick={{ fill: 'hsl(215, 12%, 50%)', fontSize: 11 }}
+                    tickFormatter={v => v.split(' ')[0]} />
                   <YAxis tick={{ fill: 'hsl(215, 12%, 50%)', fontSize: 12 }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(220, 18%, 8%)',
-                      border: '1px solid hsl(220, 16%, 16%)',
-                      borderRadius: '8px',
-                      color: 'hsl(210, 20%, 92%)',
-                    }}
-                  />
+                  <Tooltip contentStyle={{
+                    backgroundColor: 'hsl(220, 18%, 8%)', border: '1px solid hsl(220, 16%, 16%)',
+                    borderRadius: '8px', color: 'hsl(210, 20%, 92%)',
+                  }} />
                   <Bar dataKey="votes" radius={[4, 4, 0, 0]}>
                     {chartData.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -200,10 +188,85 @@ export default function Results() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+
+            {/* Radial Chart - Voter Turnout */}
+            <div className="card-glow rounded-xl p-6">
+              <h3 className="font-semibold mb-4">Voter Turnout</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <RadialBarChart
+                  cx="50%" cy="50%"
+                  innerRadius="60%"
+                  outerRadius="90%"
+                  barSize={16}
+                  data={turnoutData}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <RadialBar
+                    background={{ fill: 'hsl(220, 16%, 16%)' }}
+                    dataKey="value"
+                    cornerRadius={8}
+                  />
+                  <text
+                    x="50%" y="48%"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-2xl font-bold"
+                    fill="hsl(190, 95%, 50%)"
+                    fontSize={28}
+                    fontWeight={700}
+                  >
+                    {turnoutPercent}%
+                  </text>
+                  <text
+                    x="50%" y="60%"
+                    textAnchor="middle"
+                    fill="hsl(215, 12%, 50%)"
+                    fontSize={12}
+                  >
+                    participation
+                  </text>
+                </RadialBarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         )}
 
-        {/* Candidate breakdown */}
+        {/* Candidate Percentage Bar (horizontal) */}
+        {chartData.length > 0 && (
+          <div className="card-glow rounded-xl p-6 mb-8">
+            <h3 className="font-semibold mb-4">Candidate Vote Percentage</h3>
+            <div className="flex h-8 rounded-full overflow-hidden bg-secondary">
+              {[...chartData].sort((a, b) => b.votes - a.votes).map((c, i) => (
+                <motion.div
+                  key={c.id}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${c.percentage}%` }}
+                  transition={{ delay: 0.3 + i * 0.1, duration: 0.6 }}
+                  className="h-full relative group cursor-pointer"
+                  style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                  title={`${c.name}: ${c.percentage}%`}
+                >
+                  {c.percentage >= 10 && (
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow">
+                      {c.percentage}%
+                    </span>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-4 mt-3">
+              {[...chartData].sort((a, b) => b.votes - a.votes).map((c, i) => (
+                <div key={c.id} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                  {c.name} ({c.percentage}%)
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Candidate Rankings */}
         <h3 className="font-semibold mb-4">Candidate Rankings</h3>
         <div className="space-y-3">
           {[...chartData].sort((a, b) => b.votes - a.votes).map((c, i) => (
