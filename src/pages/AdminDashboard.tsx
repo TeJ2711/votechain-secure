@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useElections, useCreateElection, useCandidates, useAddCandidate, useDeleteCandidate, useUpdateElectionStatus, useElectionVotes } from '@/hooks/useElections';
 import { mockElections, mockCandidates } from '@/lib/mock-data';
+import { uploadToIPFS, shortenCID, getIPFSUrl } from '@/lib/ipfs';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Users, Vote, BarChart3, Settings, Trash2, UserPlus, StopCircle, Play, Eye } from 'lucide-react';
+import { Plus, Users, Vote, BarChart3, Settings, Trash2, UserPlus, StopCircle, Play, Eye, Send, Database, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { shortenHash } from '@/lib/blockchain';
@@ -94,8 +95,9 @@ export default function AdminDashboard() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedElection, setSelectedElection] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState<string | null>(null);
+  const [publishedCIDs, setPublishedCIDs] = useState<Record<string, string>>({});
 
-  // Use DB elections if available, else mock
   const elections = dbElections && dbElections.length > 0 ? dbElections : mockElections.map(e => ({
     id: e.id, title: e.title, description: e.description, start_date: e.startDate, end_date: e.endDate,
     status: e.status, created_by: e.createdBy, created_at: '',
@@ -117,6 +119,24 @@ export default function AdminDashboard() {
       onSuccess: () => toast.success(`Election ${status}`),
       onError: (err: any) => toast.error(err.message),
     });
+  };
+
+  const handlePublishResults = async (electionId: string, electionTitle: string) => {
+    setPublishing(electionId);
+    try {
+      const metadata = await uploadToIPFS(electionTitle, 'result', {
+        electionId,
+        title: electionTitle,
+        publishedAt: new Date().toISOString(),
+        status: 'finalized',
+      });
+      setPublishedCIDs(prev => ({ ...prev, [electionId]: metadata.cid }));
+      toast.success(`Results published to IPFS! CID: ${shortenCID(metadata.cid)}`);
+    } catch {
+      toast.error('Failed to publish results');
+    } finally {
+      setPublishing(null);
+    }
   };
 
   return (
@@ -188,7 +208,7 @@ export default function AdminDashboard() {
                   </div>
                   <p className="text-sm text-muted-foreground">{e.description}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap justify-end">
                   {e.status === 'upcoming' && (
                     <Button variant="outline" size="sm" onClick={() => handleStatusChange(e.id, 'active')}>
                       <Play className="mr-1 h-3 w-3" /> Start
@@ -199,11 +219,44 @@ export default function AdminDashboard() {
                       <StopCircle className="mr-1 h-3 w-3" /> End
                     </Button>
                   )}
+                  {e.status === 'ended' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePublishResults(e.id, e.title)}
+                      disabled={publishing === e.id || !!publishedCIDs[e.id]}
+                    >
+                      {publishedCIDs[e.id] ? (
+                        <><Database className="mr-1 h-3 w-3" /> Published</>
+                      ) : publishing === e.id ? (
+                        'Publishing...'
+                      ) : (
+                        <><Send className="mr-1 h-3 w-3" /> Publish Results</>
+                      )}
+                    </Button>
+                  )}
                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/results/${e.id}`}><Eye className="mr-1 h-3 w-3" /> Results</Link>
                   </Button>
                 </div>
               </div>
+
+              {/* IPFS CID display */}
+              {publishedCIDs[e.id] && (
+                <div className="flex items-center gap-2 rounded-lg bg-success/5 border border-success/20 p-2 mb-3 text-xs">
+                  <Database className="h-3.5 w-3.5 text-success shrink-0" />
+                  <span className="text-muted-foreground">IPFS CID:</span>
+                  <span className="font-mono text-primary">{shortenCID(publishedCIDs[e.id])}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 ml-auto"
+                    onClick={() => window.open(getIPFSUrl(publishedCIDs[e.id]), '_blank')}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
 
               {selectedElection === e.id ? (
                 <Tabs defaultValue="candidates" className="mt-4">
