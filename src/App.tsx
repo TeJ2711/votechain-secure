@@ -14,6 +14,7 @@ import ElectionDetails from "./pages/ElectionDetails";
 import Results from "./pages/Results";
 import VoteConfirmation from "./pages/VoteConfirmation";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
