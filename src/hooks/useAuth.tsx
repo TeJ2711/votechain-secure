@@ -10,6 +10,7 @@ export interface AppUser {
   email: string;
   role: UserRole;
   walletAddress?: string;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
