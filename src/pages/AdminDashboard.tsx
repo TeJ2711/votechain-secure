@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useElections, useCreateElection, useCandidates, useAddCandidate, useDeleteCandidate, useUpdateElectionStatus, useElectionVotes } from '@/hooks/useElections';
-import { mockElections, mockCandidates } from '@/lib/mock-data';
 import { uploadToIPFS, shortenCID, getIPFSUrl } from '@/lib/ipfs';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -98,10 +97,7 @@ export default function AdminDashboard() {
   const [publishing, setPublishing] = useState<string | null>(null);
   const [publishedCIDs, setPublishedCIDs] = useState<Record<string, string>>({});
 
-  const elections = dbElections && dbElections.length > 0 ? dbElections : mockElections.map(e => ({
-    id: e.id, title: e.title, description: e.description, start_date: e.startDate, end_date: e.endDate,
-    status: e.status, created_by: e.createdBy, created_at: '',
-  }));
+  const elections = dbElections ?? [];
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
