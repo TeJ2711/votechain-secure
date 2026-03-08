@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Wallet, ShieldCheck, Calendar, Copy, Check, Pencil, Save, X } from 'lucide-react';
+import { User, Mail, Wallet, ShieldCheck, Calendar, Copy, Check, Pencil, Save, X, Camera, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 
@@ -26,6 +26,32 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [connecting, setConnecting] = useState(false);
+
+  // Avatar state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  // Password state
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // Fetch avatar on mount
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('avatar_url')
+      .eq('user_id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      });
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -44,24 +70,14 @@ export default function Profile() {
 
   const handleSave = async () => {
     const trimmed = name.trim();
-    if (!trimmed) {
-      toast.error('Name cannot be empty');
-      return;
-    }
-    if (trimmed.length > 100) {
-      toast.error('Name must be less than 100 characters');
-      return;
-    }
+    if (!trimmed) { toast.error('Name cannot be empty'); return; }
+    if (trimmed.length > 100) { toast.error('Name must be less than 100 characters'); return; }
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ name: trimmed })
-        .eq('user_id', user.id);
+      const { error } = await supabase.from('profiles').update({ name: trimmed }).eq('user_id', user.id);
       if (error) throw error;
       toast.success('Profile updated');
       setEditing(false);
-      // Reload to reflect changes
       window.location.reload();
     } catch (err: any) {
       toast.error(err.message || 'Failed to update profile');
@@ -92,13 +108,116 @@ export default function Profile() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be less than 2MB');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/avatar.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Add cache-busting param
+      const url = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: url } as any)
+        .eq('user_id', user.id);
+      if (updateError) throw updateError;
+
+      setAvatarUrl(url);
+      toast.success('Avatar updated!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to upload avatar');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword.length > 128) {
+      toast.error('Password must be less than 128 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast.success('Password changed successfully');
+      setShowPasswordForm(false);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to change password');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   return (
     <div className="container max-w-2xl py-10">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        {/* Header */}
+        {/* Header with Avatar */}
         <div className="flex items-center gap-4 mb-8">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-primary-foreground text-2xl font-bold">
-            {user.name?.charAt(0)?.toUpperCase() || 'U'}
+          <div className="relative group">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Avatar"
+                className="h-16 w-16 rounded-2xl object-cover border-2 border-border"
+              />
+            ) : (
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-primary-foreground text-2xl font-bold">
+                {user.name?.charAt(0)?.toUpperCase() || 'U'}
+              </div>
+            )}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploadingAvatar}
+              className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              {uploadingAvatar ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                <Camera className="h-5 w-5 text-white" />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
           </div>
           <div>
             <h1 className="text-2xl font-bold">{user.name || 'User'}</h1>
@@ -139,19 +258,12 @@ export default function Profile() {
                 <User className="h-3 w-3" /> Display Name
               </Label>
               {editing ? (
-                <Input
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="Your name"
-                  maxLength={100}
-                />
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" maxLength={100} />
               ) : (
                 <p className="text-sm font-medium">{user.name || 'Not set'}</p>
               )}
             </div>
-
             <Separator />
-
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Mail className="h-3 w-3" /> Email Address
@@ -159,6 +271,84 @@ export default function Profile() {
               <p className="text-sm font-medium">{user.email}</p>
             </div>
           </CardContent>
+        </Card>
+
+        {/* Password Change */}
+        <Card className="mb-6">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">Security</CardTitle>
+              <CardDescription>Manage your password</CardDescription>
+            </div>
+            {!showPasswordForm && (
+              <Button variant="outline" size="sm" onClick={() => setShowPasswordForm(true)}>
+                <Lock className="h-3.5 w-3.5 mr-1" /> Change Password
+              </Button>
+            )}
+          </CardHeader>
+          {showPasswordForm && (
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">New Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showNew ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    maxLength={128}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNew(!showNew)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Confirm Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showConfirm ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                    maxLength={128}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                <p className="text-xs text-destructive">Passwords do not match</p>
+              )}
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleChangePassword}
+                  disabled={changingPassword || !newPassword || !confirmPassword}
+                  className="bg-gradient-primary text-primary-foreground"
+                  size="sm"
+                >
+                  <Lock className="h-3.5 w-3.5 mr-1" />
+                  {changingPassword ? 'Changing...' : 'Update Password'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => { setShowPasswordForm(false); setNewPassword(''); setConfirmPassword(''); }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         {/* Wallet */}
@@ -176,10 +366,8 @@ export default function Profile() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">Connected Wallet</p>
-                    <p className="font-mono text-sm truncate">{user.walletAddress}</p>
-                    <p className="font-mono text-xs text-muted-foreground md:hidden">
-                      {shortenAddress(user.walletAddress)}
-                    </p>
+                    <p className="font-mono text-sm truncate hidden md:block">{user.walletAddress}</p>
+                    <p className="font-mono text-sm md:hidden">{shortenAddress(user.walletAddress)}</p>
                   </div>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleCopyWallet} className="shrink-0">
