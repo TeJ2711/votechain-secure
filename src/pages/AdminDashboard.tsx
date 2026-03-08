@@ -13,6 +13,7 @@ import { Plus, Users, Vote, BarChart3, Settings, Trash2, UserPlus, StopCircle, P
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { shortenHash } from '@/lib/blockchain';
+import RegisteredUsers from '@/components/admin/RegisteredUsers';
 
 function ManageCandidates({ electionId }: { electionId: string }) {
   const { data: candidates, isLoading } = useCandidates(electionId);
@@ -275,6 +276,11 @@ export default function AdminDashboard() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      {/* Registered Users */}
+      <div className="mt-8">
+        <RegisteredUsers />
       </div>
     </div>
   );
