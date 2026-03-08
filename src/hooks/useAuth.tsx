@@ -93,19 +93,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (name: string, email: string, password: string, role: UserRole) => {
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name } },
+      options: { data: { name, role } },
     });
     if (error) throw error;
-
-    // If user was created and we need a non-default role, update it
-    if (data.user && role !== 'voter') {
-      // The trigger creates a 'voter' role by default
-      // For admin/auditor, we update the role (in production, this would be admin-only)
-      await supabase.from('user_roles').update({ role }).eq('user_id', data.user.id);
-    }
   };
 
   const logout = async () => {
