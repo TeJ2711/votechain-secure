@@ -126,6 +126,9 @@ export default function Navbar() {
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/dashboard'); }}>
                       Dashboard
                     </Button>
+                    <Button variant="outline" onClick={() => { setOpen(false); navigate('/profile'); }}>
+                      <User className="mr-2 h-4 w-4" /> Profile
+                    </Button>
 
                     <Button variant="ghost" onClick={handleLogout} className="text-destructive">
                       <LogOut className="mr-2 h-4 w-4" /> Sign Out
