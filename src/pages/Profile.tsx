@@ -21,7 +21,8 @@ const roleBadgeClass: Record<string, string> = {
 };
 
 export default function Profile() {
-  const { user, isLoading, connectWallet: setWallet } = useAuth();
+  const { user, isLoading, connectWallet: setWallet, logout } = useAuth();
+  const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState('');
   const [saving, setSaving] = useState(false);
