@@ -10,6 +10,7 @@ export interface AppUser {
   email: string;
   role: UserRole;
   walletAddress?: string;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -46,6 +47,7 @@ async function fetchAppUser(supabaseUser: SupabaseUser): Promise<AppUser | null>
     email: supabaseUser.email || '',
     role,
     walletAddress: profile?.wallet_address || undefined,
+    avatarUrl: (profile as any)?.avatar_url || undefined,
   };
 }
 
