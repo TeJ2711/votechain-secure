@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useElections, useCreateElection, useCandidates, useAddCandidate, useDeleteCandidate, useUpdateElectionStatus, useElectionVotes } from '@/hooks/useElections';
-import { mockElections, mockCandidates } from '@/lib/mock-data';
 import { uploadToIPFS, shortenCID, getIPFSUrl } from '@/lib/ipfs';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
