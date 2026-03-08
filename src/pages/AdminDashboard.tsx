@@ -277,6 +277,11 @@ export default function AdminDashboard() {
           </motion.div>
         ))}
       </div>
+
+      {/* Registered Users */}
+      <div className="mt-8">
+        <RegisteredUsers />
+      </div>
     </div>
   );
 }
