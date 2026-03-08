@@ -108,7 +108,11 @@ export default function Navbar() {
                 {user ? (
                   <>
                     <div className="flex items-center gap-3 rounded-lg bg-secondary p-3">
-                      <User className="h-5 w-5 text-primary" />
+                      {user.avatarUrl ? (
+                        <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+                      ) : (
+                        <User className="h-5 w-5 text-primary" />
+                      )}
                       <div>
                         <p className="font-medium text-sm">{user.name}</p>
                         <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
