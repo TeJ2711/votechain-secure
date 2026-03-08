@@ -415,6 +415,55 @@ export default function Profile() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Danger Zone */}
+        <Card className="mb-6 border-destructive/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-destructive">Danger Zone</CardTitle>
+            <CardDescription>Permanently delete your account and all associated data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete Account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete your account,
+                    profile data, vote history, and remove your avatar. You will be signed out immediately.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={async () => {
+                      try {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        if (!session) throw new Error('Not authenticated');
+                        const res = await supabase.functions.invoke('delete-account', {
+                          headers: { Authorization: `Bearer ${session.access_token}` },
+                        });
+                        if (res.error) throw res.error;
+                        await logout();
+                        navigate('/');
+                        toast.success('Account deleted successfully');
+                      } catch (err: any) {
+                        toast.error(err.message || 'Failed to delete account');
+                      }
+                    }}
+                  >
+                    Delete Account
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
   );
