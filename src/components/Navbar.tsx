@@ -53,13 +53,13 @@ export default function Navbar() {
               {connecting ? 'Connecting...' : 'Connect Wallet'}
             </Button>
           )}
-          <div className="hidden md:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5">
+          <Link to="/profile" className="hidden md:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 hover:bg-secondary/80 transition-colors">
             <User className="h-3.5 w-3.5 text-primary" />
             <span className="text-sm font-medium">{user.name}</span>
             <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
               {user.role}
             </span>
-          </div>
+          </Link>
           <Button variant="ghost" size="icon" onClick={handleLogout} className="hidden md:flex">
             <LogOut className="h-4 w-4" />
           </Button>
@@ -125,6 +125,9 @@ export default function Navbar() {
 
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/dashboard'); }}>
                       Dashboard
+                    </Button>
+                    <Button variant="outline" onClick={() => { setOpen(false); navigate('/profile'); }}>
+                      <User className="mr-2 h-4 w-4" /> Profile
                     </Button>
 
                     <Button variant="ghost" onClick={handleLogout} className="text-destructive">

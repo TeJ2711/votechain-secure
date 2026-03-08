@@ -14,6 +14,7 @@ import ElectionDetails from "./pages/ElectionDetails";
 import Results from "./pages/Results";
 import VoteConfirmation from "./pages/VoteConfirmation";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/election/:id" element={<ElectionDetails />} />
               <Route path="/results/:id" element={<Results />} />
               <Route path="/vote-confirmation" element={<VoteConfirmation />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
