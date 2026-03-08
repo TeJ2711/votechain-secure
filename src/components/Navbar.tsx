@@ -54,7 +54,11 @@ export default function Navbar() {
             </Button>
           )}
           <Link to="/profile" className="hidden md:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 hover:bg-secondary/80 transition-colors">
-            <User className="h-3.5 w-3.5 text-primary" />
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt="" className="h-5 w-5 rounded-full object-cover" />
+            ) : (
+              <User className="h-3.5 w-3.5 text-primary" />
+            )}
             <span className="text-sm font-medium">{user.name}</span>
             <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
               {user.role}
