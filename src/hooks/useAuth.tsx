@@ -47,6 +47,7 @@ async function fetchAppUser(supabaseUser: SupabaseUser): Promise<AppUser | null>
     email: supabaseUser.email || '',
     role,
     walletAddress: profile?.wallet_address || undefined,
+    avatarUrl: (profile as any)?.avatar_url || undefined,
   };
 }
 
