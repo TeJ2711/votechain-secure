@@ -54,20 +54,34 @@ export default function Navbar() {
               {connecting ? 'Connecting...' : 'Connect Wallet'}
             </Button>
           )}
-          <Link to="/profile" className="hidden md:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 hover:bg-secondary/80 transition-colors">
-            {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt="" className="h-5 w-5 rounded-full object-cover" />
-            ) : (
-              <User className="h-3.5 w-3.5 text-primary" />
-            )}
-            <span className="text-sm font-medium">{user.name}</span>
-            <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
-              {user.role}
-            </span>
-          </Link>
-          <Button variant="ghost" size="icon" onClick={handleLogout} className="hidden md:flex">
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="hidden md:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 hover:bg-secondary/80 transition-colors outline-none">
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="" className="h-5 w-5 rounded-full object-cover" />
+                ) : (
+                  <User className="h-3.5 w-3.5 text-primary" />
+                )}
+                <span className="text-sm font-medium">{user.name}</span>
+                <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
+                  {user.role}
+                </span>
+                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => navigate('/profile')}>
+                <User className="mr-2 h-4 w-4" /> Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" /> Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </>
       ) : (
         <div className="hidden md:flex items-center gap-2">
