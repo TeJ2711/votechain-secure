@@ -18,7 +18,7 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  register: (name: string, email: string, password: string, role: UserRole, voterId: string) => Promise<void>;
   logout: () => Promise<void>;
   connectWallet: (address: string) => Promise<void>;
 }
