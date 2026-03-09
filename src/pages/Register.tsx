@@ -13,6 +13,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [voterId, setVoterId] = useState('');
   const [role, setRole] = useState<UserRole>('voter');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
