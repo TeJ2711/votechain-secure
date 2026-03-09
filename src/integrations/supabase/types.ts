@@ -94,6 +94,7 @@ export type Database = {
           name: string
           updated_at: string
           user_id: string
+          voter_id: string | null
           wallet_address: string | null
         }
         Insert: {
@@ -104,6 +105,7 @@ export type Database = {
           name?: string
           updated_at?: string
           user_id: string
+          voter_id?: string | null
           wallet_address?: string | null
         }
         Update: {
@@ -114,6 +116,7 @@ export type Database = {
           name?: string
           updated_at?: string
           user_id?: string
+          voter_id?: string | null
           wallet_address?: string | null
         }
         Relationships: []

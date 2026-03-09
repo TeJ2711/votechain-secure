@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Shield, User, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Shield, User, Mail, Lock, ArrowRight, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -13,6 +13,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [voterId, setVoterId] = useState('');
   const [role, setRole] = useState<UserRole>('voter');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -22,7 +23,7 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      await register(name, email, password, role);
+      await register(name, email, password, role, voterId);
       toast.success('Account created! Check your email to verify.');
       navigate('/dashboard');
     } catch (err: any) {
@@ -58,6 +59,14 @@ export default function Register() {
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10" required />
               </div>
+            </div>
+            <div>
+              <Label htmlFor="voterId">Voter ID</Label>
+              <div className="relative mt-1.5">
+                <IdCard className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input id="voterId" placeholder="e.g. VOT-2024-001" value={voterId} onChange={e => setVoterId(e.target.value)} className="pl-10" required />
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">Your unique voter identification number</p>
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
