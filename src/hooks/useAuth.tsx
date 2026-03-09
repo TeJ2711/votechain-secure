@@ -94,11 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole) => {
+  const register = async (name: string, email: string, password: string, role: UserRole, voterId: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name, role } },
+      options: { data: { name, role, voter_id: voterId } },
     });
     if (error) throw error;
   };
