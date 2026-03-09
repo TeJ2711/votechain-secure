@@ -23,7 +23,7 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      await register(name, email, password, role);
+      await register(name, email, password, role, voterId);
       toast.success('Account created! Check your email to verify.');
       navigate('/dashboard');
     } catch (err: any) {
