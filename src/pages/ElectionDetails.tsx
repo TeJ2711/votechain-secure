@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useElection, useCandidates, useHasVoted, useCastVote } from '@/hooks/useElections';
 import { mockElections, mockCandidates } from '@/lib/mock-data';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { castVoteOnChain } from '@/lib/blockchain';
 import CountdownTimer from '@/components/CountdownTimer';
 import { motion, AnimatePresence } from 'framer-motion';
