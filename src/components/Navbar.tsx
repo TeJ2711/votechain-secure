@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History } from 'lucide-react';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -76,6 +76,9 @@ export default function Navbar() {
               <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                 <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/voting-history')}>
+                <History className="mr-2 h-4 w-4" /> Voting History
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Sign Out
@@ -147,7 +150,10 @@ export default function Navbar() {
                     )}
 
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/dashboard'); }}>
-                      Dashboard
+                      <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+                    </Button>
+                    <Button variant="outline" onClick={() => { setOpen(false); navigate('/voting-history'); }}>
+                      <History className="mr-2 h-4 w-4" /> Voting History
                     </Button>
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/profile'); }}>
                       <User className="mr-2 h-4 w-4" /> Profile

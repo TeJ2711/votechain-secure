@@ -1,11 +1,13 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useElections } from '@/hooks/useElections';
+import { useMyVotesCount } from '@/hooks/useMyVotesCount';
 import ElectionCard from '@/components/ElectionCard';
 import { motion } from 'framer-motion';
-import { Vote, Clock, CheckCircle, Search, Wallet, Shield } from 'lucide-react';
+import { Vote, Clock, CheckCircle, Search, Wallet, Shield, History } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { mockElections } from '@/lib/mock-data';
 import { connectWallet, shortenAddress } from '@/lib/blockchain';
 import { toast } from 'sonner';
@@ -13,6 +15,7 @@ import { toast } from 'sonner';
 export default function VoterDashboard() {
   const { user, connectWallet: setWallet } = useAuth();
   const { data: dbElections, isLoading } = useElections();
+  const { data: myVotesCount } = useMyVotesCount();
   const [filter, setFilter] = useState<'all' | 'active' | 'upcoming' | 'ended'>('all');
   const [search, setSearch] = useState('');
   const [connecting, setConnecting] = useState(false);
@@ -112,11 +115,12 @@ export default function VoterDashboard() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
           { icon: Vote, label: 'Active', value: active, color: 'text-success' },
           { icon: Clock, label: 'Upcoming', value: upcoming, color: 'text-warning' },
           { icon: CheckCircle, label: 'Completed', value: ended, color: 'text-muted-foreground' },
+          { icon: History, label: 'My Votes', value: myVotesCount ?? 0, color: 'text-primary' },
         ].map(s => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card-glow rounded-xl p-4">
             <div className="flex items-center gap-3">
@@ -128,6 +132,15 @@ export default function VoterDashboard() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      {/* Quick Links */}
+      <div className="flex gap-3 mb-6">
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/voting-history">
+            <History className="mr-2 h-4 w-4" /> View Voting History
+          </Link>
+        </Button>
       </div>
 
       {/* Search & Filters */}

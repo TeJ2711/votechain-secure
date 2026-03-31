@@ -186,3 +186,15 @@ export function useUpdateElectionStatus() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['elections'] }),
   });
 }
+
+// Delete election mutation
+export function useDeleteElection() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('elections').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['elections'] }),
+  });
+}

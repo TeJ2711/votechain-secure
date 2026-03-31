@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useElections, useCreateElection, useCandidates, useAddCandidate, useDeleteCandidate, useUpdateElectionStatus, useElectionVotes } from '@/hooks/useElections';
+import { useElections, useCreateElection, useCandidates, useAddCandidate, useDeleteCandidate, useUpdateElectionStatus, useElectionVotes, useDeleteElection } from '@/hooks/useElections';
 import { uploadToIPFS, shortenCID, getIPFSUrl } from '@/lib/ipfs';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Users, Vote, BarChart3, Settings, Trash2, UserPlus, StopCircle, Play, Eye, Send, Database, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
@@ -89,6 +90,7 @@ export default function AdminDashboard() {
   const { data: dbElections } = useElections();
   const createElection = useCreateElection();
   const updateStatus = useUpdateElectionStatus();
+  const deleteElection = useDeleteElection();
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -232,9 +234,36 @@ export default function AdminDashboard() {
                       )}
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" asChild>
+                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/results/${e.id}`}><Eye className="mr-1 h-3 w-3" /> Results</Link>
                   </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                        <Trash2 className="mr-1 h-3 w-3" /> Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Election?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete "{e.title}" along with all candidates and votes. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          onClick={() => deleteElection.mutate(e.id, {
+                            onSuccess: () => toast.success(`Election "${e.title}" deleted`),
+                            onError: (err: any) => toast.error(err.message || 'Failed to delete'),
+                          })}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
 

@@ -1,15 +1,16 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useElection, useCandidates, useHasVoted, useCastVote } from '@/hooks/useElections';
 import { mockElections, mockCandidates } from '@/lib/mock-data';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { castVoteOnChain } from '@/lib/blockchain';
 import CountdownTimer from '@/components/CountdownTimer';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle, Loader2, Vote, Users, Shield, Wallet, Blocks } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Loader2, Vote, Users, Shield, Wallet, Blocks, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ElectionDetails() {
@@ -19,6 +20,14 @@ export default function ElectionDetails() {
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [voting, setVoting] = useState(false);
   const [txProgress, setTxProgress] = useState(0);
+  const [hasVoterId, setHasVoterId] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('voter_id').eq('user_id', user.id).single().then(({ data }) => {
+      setHasVoterId(!!data?.voter_id);
+    });
+  }, [user]);
 
   const { data: dbElection } = useElection(id || '');
   const { data: dbCandidates } = useCandidates(id || '');
@@ -165,6 +174,15 @@ export default function ElectionDetails() {
             </motion.div>
           ) : (
             <motion.div key="voting">
+              {hasVoterId === false && (
+                <div className="card-glow rounded-xl p-4 mb-4 flex items-center gap-3 border-warning/20">
+                  <IdCard className="h-5 w-5 text-warning shrink-0" />
+                  <p className="text-sm text-muted-foreground">
+                    You need to set your Voter ID before voting. Go to your <button onClick={() => navigate('/profile')} className="text-primary underline">profile</button> to set it.
+                  </p>
+                </div>
+              )}
+
               {!user?.walletAddress && (
                 <div className="card-glow rounded-xl p-4 mb-4 flex items-center gap-3 border-warning/20">
                   <Wallet className="h-5 w-5 text-warning shrink-0" />
@@ -212,7 +230,7 @@ export default function ElectionDetails() {
               {election.status === 'active' && candidates.length > 0 && (
                 <Button
                   onClick={handleVote}
-                  disabled={!selectedCandidate || !user?.walletAddress}
+                  disabled={!selectedCandidate || !user?.walletAddress || hasVoterId === false}
                   className="w-full bg-gradient-primary text-primary-foreground h-12 text-base"
                 >
                   <Vote className="mr-2 h-5 w-5" /> Cast Vote
