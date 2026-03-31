@@ -76,6 +76,9 @@ export default function Navbar() {
               <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                 <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/voting-history')}>
+                <History className="mr-2 h-4 w-4" /> Voting History
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Sign Out
