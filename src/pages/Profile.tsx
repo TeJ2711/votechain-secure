@@ -276,6 +276,13 @@ export default function Profile() {
               </Label>
               <p className="text-sm font-medium">{user.email}</p>
             </div>
+            <Separator />
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <IdCard className="h-3 w-3" /> Voter ID
+              </Label>
+              <p className="text-sm font-mono font-medium">{voterId || 'Not set'}</p>
+            </div>
           </CardContent>
         </Card>
 
