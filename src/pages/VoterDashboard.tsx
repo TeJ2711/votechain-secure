@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 export default function VoterDashboard() {
   const { user, connectWallet: setWallet } = useAuth();
   const { data: dbElections, isLoading } = useElections();
+  const { data: myVotesCount } = useMyVotesCount();
   const [filter, setFilter] = useState<'all' | 'active' | 'upcoming' | 'ended'>('all');
   const [search, setSearch] = useState('');
   const [connecting, setConnecting] = useState(false);
