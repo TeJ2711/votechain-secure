@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { User, Mail, Wallet, ShieldCheck, Calendar, Copy, Check, Pencil, Save, X, Camera, Lock, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { User, Mail, Wallet, ShieldCheck, Calendar, Copy, Check, Pencil, Save, X, Camera, Lock, Eye, EyeOff, Trash2, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 
