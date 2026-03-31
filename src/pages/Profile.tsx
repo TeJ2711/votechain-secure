@@ -285,7 +285,62 @@ export default function Profile() {
               <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <IdCard className="h-3 w-3" /> Voter ID
               </Label>
-              <p className="text-sm font-mono font-medium">{voterId || 'Not set'}</p>
+              {editingVoterId ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={newVoterId}
+                    onChange={e => setNewVoterId(e.target.value.toUpperCase())}
+                    placeholder="VOT-XXXX-XXX"
+                    maxLength={12}
+                    className="font-mono"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={savingVoterId}
+                    className="bg-gradient-primary text-primary-foreground"
+                    onClick={async () => {
+                      if (!voterIdPattern.test(newVoterId)) {
+                        toast.error('Format must be VOT-XXXX-XXX (e.g. VOT-2024-001)');
+                        return;
+                      }
+                      setSavingVoterId(true);
+                      try {
+                        const { data: available } = await supabase.rpc('check_voter_id_available', {
+                          p_voter_id: newVoterId,
+                          p_user_id: user.id,
+                        });
+                        if (!available) {
+                          toast.error('This Voter ID is already in use');
+                          return;
+                        }
+                        const { error } = await supabase.from('profiles').update({ voter_id: newVoterId }).eq('user_id', user.id);
+                        if (error) throw error;
+                        setVoterId(newVoterId);
+                        setEditingVoterId(false);
+                        toast.success('Voter ID saved');
+                      } catch (err: any) {
+                        toast.error(err.message || 'Failed to save Voter ID');
+                      } finally {
+                        setSavingVoterId(false);
+                      }
+                    }}
+                  >
+                    <Save className="h-3.5 w-3.5 mr-1" /> {savingVoterId ? 'Saving...' : 'Save'}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setEditingVoterId(false)}>
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-mono font-medium">{voterId || 'Not set'}</p>
+                  {!voterId && (
+                    <Button variant="outline" size="sm" onClick={() => { setNewVoterId(''); setEditingVoterId(true); }}>
+                      <Pencil className="h-3 w-3 mr-1" /> Add
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
