@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle, Loader2, Vote, Users, Shield, Wallet, Blocks } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Loader2, Vote, Users, Shield, Wallet, Blocks, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ElectionDetails() {
