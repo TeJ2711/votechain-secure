@@ -44,6 +44,10 @@ export default function Profile() {
 
   // Voter ID state
   const [voterId, setVoterId] = useState<string | null>(null);
+  const [editingVoterId, setEditingVoterId] = useState(false);
+  const [newVoterId, setNewVoterId] = useState('');
+  const [savingVoterId, setSavingVoterId] = useState(false);
+  const voterIdPattern = /^VOT-\d{4}-\d{3}$/;
 
   // Fetch avatar and voter_id on mount
   useEffect(() => {
