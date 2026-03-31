@@ -23,13 +23,22 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!voterIdPattern.test(voterId)) {
+    // Voter ID is optional, but if provided must match format
+    if (voterId && !voterIdPattern.test(voterId)) {
       toast.error('Voter ID must match format VOT-XXXX-XXX (e.g. VOT-2024-001)');
       return;
     }
+    // Check uniqueness if provided
+    if (voterId) {
+      const { data: available } = await supabase.rpc('check_voter_id_available', { p_voter_id: voterId });
+      if (!available) {
+        toast.error('This Voter ID is already in use');
+        return;
+      }
+    }
     setLoading(true);
     try {
-      await register(name, email, password, role, voterId);
+      await register(name, email, password, role, voterId || '');
       toast.success('Account created! Check your email to verify.');
       navigate('/dashboard');
     } catch (err: any) {
