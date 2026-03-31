@@ -90,6 +90,7 @@ export default function AdminDashboard() {
   const { data: dbElections } = useElections();
   const createElection = useCreateElection();
   const updateStatus = useUpdateElectionStatus();
+  const deleteElection = useDeleteElection();
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
