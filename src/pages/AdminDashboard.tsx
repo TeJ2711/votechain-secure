@@ -234,9 +234,36 @@ export default function AdminDashboard() {
                       )}
                     </Button>
                   )}
-                  <Button variant="outline" size="sm" asChild>
+                   <Button variant="outline" size="sm" asChild>
                     <Link to={`/results/${e.id}`}><Eye className="mr-1 h-3 w-3" /> Results</Link>
                   </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+                        <Trash2 className="mr-1 h-3 w-3" /> Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Election?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete "{e.title}" along with all candidates and votes. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          onClick={() => deleteElection.mutate(e.id, {
+                            onSuccess: () => toast.success(`Election "${e.title}" deleted`),
+                            onError: (err: any) => toast.error(err.message || 'Failed to delete'),
+                          })}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
 
