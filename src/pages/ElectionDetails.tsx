@@ -174,6 +174,15 @@ export default function ElectionDetails() {
             </motion.div>
           ) : (
             <motion.div key="voting">
+              {hasVoterId === false && (
+                <div className="card-glow rounded-xl p-4 mb-4 flex items-center gap-3 border-warning/20">
+                  <IdCard className="h-5 w-5 text-warning shrink-0" />
+                  <p className="text-sm text-muted-foreground">
+                    You need to set your Voter ID before voting. Go to your <button onClick={() => navigate('/profile')} className="text-primary underline">profile</button> to set it.
+                  </p>
+                </div>
+              )}
+
               {!user?.walletAddress && (
                 <div className="card-glow rounded-xl p-4 mb-4 flex items-center gap-3 border-warning/20">
                   <Wallet className="h-5 w-5 text-warning shrink-0" />
