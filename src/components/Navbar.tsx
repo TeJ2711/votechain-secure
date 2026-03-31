@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History } from 'lucide-react';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 import { useState } from 'react';
 import { toast } from 'sonner';
