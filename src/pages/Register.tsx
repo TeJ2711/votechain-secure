@@ -19,8 +19,14 @@ export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const voterIdPattern = /^VOT-\d{4}-\d{3}$/;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!voterIdPattern.test(voterId)) {
+      toast.error('Voter ID must match format VOT-XXXX-XXX (e.g. VOT-2024-001)');
+      return;
+    }
     setLoading(true);
     try {
       await register(name, email, password, role, voterId);
@@ -64,9 +70,9 @@ export default function Register() {
               <Label htmlFor="voterId">Voter ID</Label>
               <div className="relative mt-1.5">
                 <IdCard className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input id="voterId" placeholder="e.g. VOT-2024-001" value={voterId} onChange={e => setVoterId(e.target.value)} className="pl-10" required />
+                <Input id="voterId" placeholder="VOT-XXXX-XXX" value={voterId} onChange={e => setVoterId(e.target.value.toUpperCase())} className="pl-10 font-mono" required pattern="^VOT-\d{4}-\d{3}$" maxLength={12} />
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">Your unique voter identification number</p>
+              <p className="mt-1 text-xs text-muted-foreground">Format: VOT-XXXX-XXX (e.g. VOT-2024-001)</p>
             </div>
             <div>
               <Label htmlFor="password">Password</Label>

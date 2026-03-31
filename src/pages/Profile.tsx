@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { User, Mail, Wallet, ShieldCheck, Calendar, Copy, Check, Pencil, Save, X, Camera, Lock, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { User, Mail, Wallet, ShieldCheck, Calendar, Copy, Check, Pencil, Save, X, Camera, Lock, Eye, EyeOff, Trash2, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 
@@ -42,16 +42,20 @@ export default function Profile() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // Fetch avatar on mount
+  // Voter ID state
+  const [voterId, setVoterId] = useState<string | null>(null);
+
+  // Fetch avatar and voter_id on mount
   useEffect(() => {
     if (!user) return;
     supabase
       .from('profiles')
-      .select('avatar_url')
+      .select('avatar_url, voter_id')
       .eq('user_id', user.id)
       .single()
       .then(({ data }) => {
         if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+        if (data?.voter_id) setVoterId(data.voter_id);
       });
   }, [user]);
 
@@ -271,6 +275,13 @@ export default function Profile() {
                 <Mail className="h-3 w-3" /> Email Address
               </Label>
               <p className="text-sm font-medium">{user.email}</p>
+            </div>
+            <Separator />
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <IdCard className="h-3 w-3" /> Voter ID
+              </Label>
+              <p className="text-sm font-mono font-medium">{voterId || 'Not set'}</p>
             </div>
           </CardContent>
         </Card>
