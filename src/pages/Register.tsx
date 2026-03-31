@@ -19,8 +19,14 @@ export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const voterIdPattern = /^VOT-\d{4}-\d{3}$/;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!voterIdPattern.test(voterId)) {
+      toast.error('Voter ID must match format VOT-XXXX-XXX (e.g. VOT-2024-001)');
+      return;
+    }
     setLoading(true);
     try {
       await register(name, email, password, role, voterId);
