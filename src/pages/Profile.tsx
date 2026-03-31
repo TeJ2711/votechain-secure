@@ -334,11 +334,9 @@ export default function Profile() {
               ) : (
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-mono font-medium">{voterId || 'Not set'}</p>
-                  {!voterId && (
-                    <Button variant="outline" size="sm" onClick={() => { setNewVoterId(''); setEditingVoterId(true); }}>
-                      <Pencil className="h-3 w-3 mr-1" /> Add
-                    </Button>
-                  )}
+                  <Button variant="outline" size="sm" onClick={() => { setNewVoterId(voterId || ''); setEditingVoterId(true); }}>
+                    <Pencil className="h-3 w-3 mr-1" /> {voterId ? 'Edit' : 'Add'}
+                  </Button>
                 </div>
               )}
             </div>
