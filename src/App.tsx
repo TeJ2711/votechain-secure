@@ -15,6 +15,7 @@ import Results from "./pages/Results";
 import VoteConfirmation from "./pages/VoteConfirmation";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import VotingHistory from "./pages/VotingHistory";
 
 const queryClient = new QueryClient();
 
