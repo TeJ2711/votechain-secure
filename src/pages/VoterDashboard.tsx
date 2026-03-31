@@ -1,11 +1,13 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useElections } from '@/hooks/useElections';
+import { useMyVotesCount } from '@/hooks/useMyVotesCount';
 import ElectionCard from '@/components/ElectionCard';
 import { motion } from 'framer-motion';
-import { Vote, Clock, CheckCircle, Search, Wallet, Shield } from 'lucide-react';
+import { Vote, Clock, CheckCircle, Search, Wallet, Shield, History } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { mockElections } from '@/lib/mock-data';
 import { connectWallet, shortenAddress } from '@/lib/blockchain';
 import { toast } from 'sonner';
