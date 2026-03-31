@@ -230,7 +230,7 @@ export default function ElectionDetails() {
               {election.status === 'active' && candidates.length > 0 && (
                 <Button
                   onClick={handleVote}
-                  disabled={!selectedCandidate || !user?.walletAddress}
+                  disabled={!selectedCandidate || !user?.walletAddress || hasVoterId === false}
                   className="w-full bg-gradient-primary text-primary-foreground h-12 text-base"
                 >
                   <Vote className="mr-2 h-5 w-5" /> Cast Vote
