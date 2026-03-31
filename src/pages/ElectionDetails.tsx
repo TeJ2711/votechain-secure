@@ -20,6 +20,14 @@ export default function ElectionDetails() {
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [voting, setVoting] = useState(false);
   const [txProgress, setTxProgress] = useState(0);
+  const [hasVoterId, setHasVoterId] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('voter_id').eq('user_id', user.id).single().then(({ data }) => {
+      setHasVoterId(!!data?.voter_id);
+    });
+  }, [user]);
 
   const { data: dbElection } = useElection(id || '');
   const { data: dbCandidates } = useCandidates(id || '');
