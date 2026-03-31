@@ -186,6 +186,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_voter_id_available: {
+        Args: { p_user_id?: string; p_voter_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
