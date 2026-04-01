@@ -77,6 +77,7 @@ export default function RegisteredUsers() {
   const { data: users, isLoading } = useRegisteredUsers();
   const updateRole = useUpdateUserRole();
   const { user: currentUser } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleRoleChange = (userId: string, newRole: string) => {
     if (userId === currentUser?.id) {
@@ -85,6 +86,16 @@ export default function RegisteredUsers() {
     }
     updateRole.mutate({ userId, newRole });
   };
+
+  const filteredUsers = users?.filter(u => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (u.voter_id && u.voter_id.toLowerCase().includes(q)) ||
+      u.name.toLowerCase().includes(q) ||
+      (u.email && u.email.toLowerCase().includes(q))
+    );
+  });
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card-glow rounded-xl p-5">
@@ -96,10 +107,20 @@ export default function RegisteredUsers() {
         )}
       </div>
 
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search by name, email, or Voter ID..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading users...</p>
-      ) : !users || users.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No registered users yet</p>
+      ) : !filteredUsers || filteredUsers.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{searchQuery ? 'No users match your search' : 'No registered users yet'}</p>
       ) : (
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {users.map(u => {
