@@ -160,6 +160,9 @@ export default function Navbar() {
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/voting-history'); }}>
                       <History className="mr-2 h-4 w-4" /> Voting History
                     </Button>
+                    <Button variant="outline" onClick={() => { setOpen(false); navigate('/analytics'); }}>
+                      <BarChart3 className="mr-2 h-4 w-4" /> Analytics
+                    </Button>
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/profile'); }}>
                       <User className="mr-2 h-4 w-4" /> Profile
                     </Button>
