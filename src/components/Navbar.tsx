@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History } from 'lucide-react';
+import NotificationBell from '@/components/NotificationBell';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -54,6 +55,7 @@ export default function Navbar() {
               {connecting ? 'Connecting...' : 'Connect Wallet'}
             </Button>
           )}
+          <NotificationBell />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="hidden md:flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 hover:bg-secondary/80 transition-colors outline-none">
