@@ -61,12 +61,18 @@ export default function ElectionDetails() {
     );
   }
 
-  const handleVote = async () => {
+  const handleVoteClick = () => {
     if (!selectedCandidate || !user) return;
     if (!user.walletAddress) {
       toast.error('Please connect your wallet first from the dashboard');
       return;
     }
+    setShowOtp(true);
+  };
+
+  const handleVote = async () => {
+    if (!selectedCandidate || !user) return;
+    setShowOtp(false);
 
     setVoting(true);
     setTxProgress(10);
