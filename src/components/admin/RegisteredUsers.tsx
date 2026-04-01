@@ -123,7 +123,7 @@ export default function RegisteredUsers() {
         <p className="text-sm text-muted-foreground">{searchQuery ? 'No users match your search' : 'No registered users yet'}</p>
       ) : (
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {users.map(u => {
+          {filteredUsers.map(u => {
             const isSelf = u.user_id === currentUser?.id;
             return (
               <div key={u.id} className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/30 p-3">
@@ -134,7 +134,12 @@ export default function RegisteredUsers() {
                       <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground">You</Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
+                    {u.voter_id && (
+                      <span className="flex items-center gap-1 font-mono text-primary">
+                        <IdCard className="h-3 w-3 shrink-0" /> {u.voter_id}
+                      </span>
+                    )}
                     {u.email && (
                       <span className="flex items-center gap-1 truncate">
                         <Mail className="h-3 w-3 shrink-0" /> {u.email}
