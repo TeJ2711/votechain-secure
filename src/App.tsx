@@ -39,6 +39,7 @@ const App = () => (
               <Route path="/vote-confirmation" element={<VoteConfirmation />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/voting-history" element={<VotingHistory />} />
+              <Route path="/analytics" element={<Analytics />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

@@ -237,13 +237,15 @@ export default function ElectionDetails() {
 
               {election.status === 'active' && candidates.length > 0 && (
                 <Button
-                  onClick={handleVote}
+                  onClick={handleVoteClick}
                   disabled={!selectedCandidate || !user?.walletAddress || hasVoterId === false}
                   className="w-full bg-gradient-primary text-primary-foreground h-12 text-base"
                 >
                   <Vote className="mr-2 h-5 w-5" /> Cast Vote
                 </Button>
               )}
+
+              <VoteOtpDialog open={showOtp} onClose={() => setShowOtp(false)} onVerified={handleVote} />
             </motion.div>
           )}
         </AnimatePresence>
