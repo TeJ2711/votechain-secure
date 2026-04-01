@@ -15,6 +15,7 @@ interface UserWithRole {
   name: string;
   email: string | null;
   wallet_address: string | null;
+  voter_id: string | null;
   created_at: string;
   role: string;
 }
