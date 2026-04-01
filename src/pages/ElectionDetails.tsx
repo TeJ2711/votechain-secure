@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { castVoteOnChain } from '@/lib/blockchain';
 import CountdownTimer from '@/components/CountdownTimer';
+import VoteOtpDialog from '@/components/VoteOtpDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
