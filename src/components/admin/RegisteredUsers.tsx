@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Mail, Wallet, Calendar, ShieldCheck } from 'lucide-react';
+import { Users, Mail, Wallet, Calendar, ShieldCheck, Search, IdCard } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,6 +15,7 @@ interface UserWithRole {
   name: string;
   email: string | null;
   wallet_address: string | null;
+  voter_id: string | null;
   created_at: string;
   role: string;
 }
@@ -74,6 +77,7 @@ export default function RegisteredUsers() {
   const { data: users, isLoading } = useRegisteredUsers();
   const updateRole = useUpdateUserRole();
   const { user: currentUser } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleRoleChange = (userId: string, newRole: string) => {
     if (userId === currentUser?.id) {
@@ -82,6 +86,16 @@ export default function RegisteredUsers() {
     }
     updateRole.mutate({ userId, newRole });
   };
+
+  const filteredUsers = users?.filter(u => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (u.voter_id && u.voter_id.toLowerCase().includes(q)) ||
+      u.name.toLowerCase().includes(q) ||
+      (u.email && u.email.toLowerCase().includes(q))
+    );
+  });
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card-glow rounded-xl p-5">
@@ -93,13 +107,23 @@ export default function RegisteredUsers() {
         )}
       </div>
 
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search by name, email, or Voter ID..."
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading users...</p>
-      ) : !users || users.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No registered users yet</p>
+      ) : !filteredUsers || filteredUsers.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{searchQuery ? 'No users match your search' : 'No registered users yet'}</p>
       ) : (
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          {users.map(u => {
+          {filteredUsers.map(u => {
             const isSelf = u.user_id === currentUser?.id;
             return (
               <div key={u.id} className="flex items-center justify-between rounded-lg border border-border/50 bg-secondary/30 p-3">
@@ -110,7 +134,12 @@ export default function RegisteredUsers() {
                       <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground">You</Badge>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
+                    {u.voter_id && (
+                      <span className="flex items-center gap-1 font-mono text-primary">
+                        <IdCard className="h-3 w-3 shrink-0" /> {u.voter_id}
+                      </span>
+                    )}
                     {u.email && (
                       <span className="flex items-center gap-1 truncate">
                         <Mail className="h-3 w-3 shrink-0" /> {u.email}
