@@ -22,6 +22,7 @@ export default function ElectionDetails() {
   const [voting, setVoting] = useState(false);
   const [txProgress, setTxProgress] = useState(0);
   const [hasVoterId, setHasVoterId] = useState<boolean | null>(null);
+  const [showOtp, setShowOtp] = useState(false);
 
   useEffect(() => {
     if (!user) return;
