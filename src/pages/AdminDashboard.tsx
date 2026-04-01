@@ -115,8 +115,19 @@ export default function AdminDashboard() {
   };
 
   const handleStatusChange = (id: string, status: string) => {
+    const election = elections.find(e => e.id === id);
     updateStatus.mutate({ id, status }, {
-      onSuccess: () => toast.success(`Election ${status}`),
+      onSuccess: async () => {
+        toast.success(`Election ${status}`);
+        if (election && (status === 'active' || status === 'ended')) {
+          try {
+            await notifyAllVoters(election.title, status, id);
+            toast.success('Notifications sent to all users');
+          } catch {
+            toast.error('Failed to send notifications');
+          }
+        }
+      },
       onError: (err: any) => toast.error(err.message),
     });
   };
