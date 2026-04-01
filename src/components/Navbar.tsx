@@ -81,6 +81,9 @@ export default function Navbar() {
               <DropdownMenuItem onClick={() => navigate('/voting-history')}>
                 <History className="mr-2 h-4 w-4" /> Voting History
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/analytics')}>
+                <BarChart3 className="mr-2 h-4 w-4" /> Analytics
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Sign Out
