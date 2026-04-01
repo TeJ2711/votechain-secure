@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { shortenHash } from '@/lib/blockchain';
 import RegisteredUsers from '@/components/admin/RegisteredUsers';
+import { notifyAllVoters } from '@/hooks/useNotifications';
 
 function ManageCandidates({ electionId }: { electionId: string }) {
   const { data: candidates, isLoading } = useCandidates(electionId);
