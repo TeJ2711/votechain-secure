@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { castVoteOnChain } from '@/lib/blockchain';
 import CountdownTimer from '@/components/CountdownTimer';
+import VoteOtpDialog from '@/components/VoteOtpDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,7 @@ export default function ElectionDetails() {
   const [voting, setVoting] = useState(false);
   const [txProgress, setTxProgress] = useState(0);
   const [hasVoterId, setHasVoterId] = useState<boolean | null>(null);
+  const [showOtp, setShowOtp] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -59,12 +61,18 @@ export default function ElectionDetails() {
     );
   }
 
-  const handleVote = async () => {
+  const handleVoteClick = () => {
     if (!selectedCandidate || !user) return;
     if (!user.walletAddress) {
       toast.error('Please connect your wallet first from the dashboard');
       return;
     }
+    setShowOtp(true);
+  };
+
+  const handleVote = async () => {
+    if (!selectedCandidate || !user) return;
+    setShowOtp(false);
 
     setVoting(true);
     setTxProgress(10);
@@ -229,13 +237,15 @@ export default function ElectionDetails() {
 
               {election.status === 'active' && candidates.length > 0 && (
                 <Button
-                  onClick={handleVote}
+                  onClick={handleVoteClick}
                   disabled={!selectedCandidate || !user?.walletAddress || hasVoterId === false}
                   className="w-full bg-gradient-primary text-primary-foreground h-12 text-base"
                 >
                   <Vote className="mr-2 h-5 w-5" /> Cast Vote
                 </Button>
               )}
+
+              <VoteOtpDialog open={showOtp} onClose={() => setShowOtp(false)} onVerified={handleVote} />
             </motion.div>
           )}
         </AnimatePresence>

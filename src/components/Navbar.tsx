@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History } from 'lucide-react';
+import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History, BarChart3 } from 'lucide-react';
 import NotificationBell from '@/components/NotificationBell';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 import { useState } from 'react';
@@ -81,6 +81,9 @@ export default function Navbar() {
               <DropdownMenuItem onClick={() => navigate('/voting-history')}>
                 <History className="mr-2 h-4 w-4" /> Voting History
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/analytics')}>
+                <BarChart3 className="mr-2 h-4 w-4" /> Analytics
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Sign Out
@@ -156,6 +159,9 @@ export default function Navbar() {
                     </Button>
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/voting-history'); }}>
                       <History className="mr-2 h-4 w-4" /> Voting History
+                    </Button>
+                    <Button variant="outline" onClick={() => { setOpen(false); navigate('/analytics'); }}>
+                      <BarChart3 className="mr-2 h-4 w-4" /> Analytics
                     </Button>
                     <Button variant="outline" onClick={() => { setOpen(false); navigate('/profile'); }}>
                       <User className="mr-2 h-4 w-4" /> Profile

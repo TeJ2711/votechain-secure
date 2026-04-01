@@ -16,6 +16,7 @@ import VoteConfirmation from "./pages/VoteConfirmation";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import VotingHistory from "./pages/VotingHistory";
+import Analytics from "./pages/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/vote-confirmation" element={<VoteConfirmation />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/voting-history" element={<VotingHistory />} />
+              <Route path="/analytics" element={<Analytics />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
