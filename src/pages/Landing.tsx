@@ -108,8 +108,89 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Security & Blockchain */}
+      <section className="border-y border-border/50 bg-gradient-to-b from-background to-card/30 py-24">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mb-16 text-center"
+          >
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+              <Lock className="h-3.5 w-3.5" />
+              Enterprise-Grade Security
+            </div>
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Built on <span className="text-gradient">Blockchain</span> Trust
+            </h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">
+              Every layer of Votelytics is designed to eliminate fraud, ensure transparency, and protect voter privacy through cutting-edge cryptographic technology.
+            </p>
+          </motion.div>
+
+          <div className="grid gap-8 md:grid-cols-2">
+            {/* Left: Security layers */}
+            <div className="space-y-4">
+              {[
+                { icon: Blocks, title: 'Immutable Ledger', desc: 'Votes are permanently recorded on the Ethereum blockchain. Once cast, they cannot be altered, deleted, or tampered with by anyone.' },
+                { icon: Shield, title: 'Smart Contract Enforcement', desc: 'Solidity smart contracts automatically enforce election rules — preventing double voting, unauthorized access, and result manipulation.' },
+                { icon: Lock, title: 'End-to-End Encryption', desc: 'All data in transit and at rest is encrypted. Voter identities are cryptographically separated from their ballot choices.' },
+                { icon: Eye, title: 'Public Auditability', desc: 'Anyone can verify election integrity using transaction hashes on Etherscan, without compromising voter anonymity.' },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="flex gap-4 rounded-xl border border-border/50 bg-card/60 p-5 backdrop-blur-sm transition-colors hover:border-primary/30"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <item.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="mb-1 font-semibold">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Right: Visual blockchain graphic */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center justify-center rounded-xl border border-border/50 bg-card/40 p-8 backdrop-blur-sm"
+            >
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-primary shadow-lg shadow-primary/20">
+                <Blocks className="h-10 w-10 text-primary-foreground" />
+              </div>
+              <h3 className="mb-2 text-xl font-bold">Ethereum Powered</h3>
+              <p className="mb-6 text-center text-sm text-muted-foreground">
+                Every vote generates a verifiable transaction on the Ethereum network
+              </p>
+              <div className="w-full space-y-3">
+                {[
+                  { label: 'Network', value: 'Ethereum Mainnet' },
+                  { label: 'Contract', value: '0x742d...2bD18' },
+                  { label: 'Consensus', value: 'Proof of Stake' },
+                  { label: 'Verification', value: 'Etherscan' },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-center justify-between rounded-lg bg-background/60 px-4 py-2.5 text-sm">
+                    <span className="text-muted-foreground">{row.label}</span>
+                    <span className="font-mono text-xs font-medium">{row.value}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
-      <section className="container pb-24">
+      <section className="container py-24">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
