@@ -3,8 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, Mail, Wallet, Calendar, ShieldCheck, Search, IdCard } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Users, Mail, Wallet, Calendar, ShieldCheck, Search, IdCard, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -52,7 +54,6 @@ function useUpdateUserRole() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ userId, newRole }: { userId: string; newRole: string }) => {
-      // Update existing role row
       const { error } = await supabase
         .from('user_roles')
         .update({ role: newRole as any })
@@ -67,6 +68,25 @@ function useUpdateUserRole() {
   });
 }
 
+function useDeleteUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (targetUserId: string) => {
+      const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+        body: { targetUserId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-registered-users'] });
+      toast.success('User permanently deleted');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to delete user'),
+  });
+}
+
 const roleBadgeClass: Record<string, string> = {
   admin: 'bg-primary/10 text-primary border-primary/20',
   voter: 'bg-success/10 text-success border-success/20',
@@ -76,6 +96,7 @@ const roleBadgeClass: Record<string, string> = {
 export default function RegisteredUsers() {
   const { data: users, isLoading } = useRegisteredUsers();
   const updateRole = useUpdateUserRole();
+  const deleteUser = useDeleteUser();
   const { user: currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -176,6 +197,33 @@ export default function RegisteredUsers() {
                     <Calendar className="h-3 w-3" />
                     {new Date(u.created_at).toLocaleDateString()}
                   </span>
+                  {!isSelf && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Permanently Delete User?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete <strong>{u.name || u.email || 'this user'}</strong> and all their data including votes, profile, and authentication. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={() => deleteUser.mutate(u.user_id)}
+                            disabled={deleteUser.isPending}
+                          >
+                            {deleteUser.isPending ? 'Deleting...' : 'Delete Permanently'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                 </div>
               </div>
             );
