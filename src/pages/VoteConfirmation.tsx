@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ExternalLink, ArrowLeft, Shield, Hash, Clock, Blocks } from 'lucide-react';
+import { CheckCircle, ExternalLink, ArrowLeft, Shield, Hash, Clock, Blocks, Download } from 'lucide-react';
 import { getEtherscanUrl, shortenHash } from '@/lib/blockchain';
+import { toast } from 'sonner';
 
 interface ConfirmationState {
   txHash: string;
@@ -10,6 +11,96 @@ interface ConfirmationState {
   electionTitle: string;
   blockNumber?: number;
   timestamp?: string;
+}
+
+function generateReceiptPDF(state: ConfirmationState) {
+  import('jspdf').then(({ jsPDF }) => {
+    const doc = new jsPDF();
+    const w = doc.internal.pageSize.getWidth();
+    let y = 20;
+
+    // Header
+    doc.setFillColor(17, 24, 39);
+    doc.rect(0, 0, w, 45, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('VOTELYTICS', w / 2, y, { align: 'center' });
+    y += 10;
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Official Vote Receipt', w / 2, y, { align: 'center' });
+    y += 8;
+    doc.setFontSize(8);
+    doc.text('Blockchain-Verified Voting Platform', w / 2, y, { align: 'center' });
+
+    y = 55;
+    doc.setTextColor(34, 197, 94);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('✓ Vote Successfully Recorded', w / 2, y, { align: 'center' });
+
+    // Details section
+    y = 72;
+    doc.setDrawColor(229, 231, 235);
+    doc.setFillColor(249, 250, 251);
+    doc.roundedRect(20, y, w - 40, 80, 3, 3, 'FD');
+
+    y += 12;
+    doc.setTextColor(107, 114, 128);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const leftX = 30;
+    const rightX = w - 30;
+
+    const addRow = (label: string, value: string) => {
+      doc.setTextColor(107, 114, 128);
+      doc.setFont('helvetica', 'normal');
+      doc.text(label, leftX, y);
+      doc.setTextColor(17, 24, 39);
+      doc.setFont('helvetica', 'bold');
+      doc.text(value, rightX, y, { align: 'right' });
+      y += 12;
+    };
+
+    addRow('Election', state.electionTitle);
+    addRow('Candidate', state.candidateName);
+    addRow('Timestamp', state.timestamp ? new Date(state.timestamp).toLocaleString() : new Date().toLocaleString());
+    if (state.blockNumber) {
+      addRow('Block Number', state.blockNumber.toLocaleString());
+    }
+
+    // Transaction hash
+    y += 8;
+    doc.setTextColor(107, 114, 128);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Transaction Hash:', leftX, y);
+    y += 8;
+    doc.setFillColor(243, 244, 246);
+    doc.roundedRect(20, y - 5, w - 40, 14, 2, 2, 'F');
+    doc.setTextColor(79, 70, 229);
+    doc.setFontSize(7);
+    doc.setFont('courier', 'normal');
+    doc.text(state.txHash, w / 2, y + 3, { align: 'center' });
+
+    // Footer
+    y += 25;
+    doc.setDrawColor(229, 231, 235);
+    doc.line(20, y, w - 20, y);
+    y += 10;
+    doc.setTextColor(156, 163, 175);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('This receipt confirms your vote was recorded on the blockchain.', w / 2, y, { align: 'center' });
+    y += 5;
+    doc.text('Your vote is immutable and cannot be altered or deleted.', w / 2, y, { align: 'center' });
+    y += 5;
+    doc.text(`Generated: ${new Date().toLocaleString()}`, w / 2, y, { align: 'center' });
+
+    doc.save(`vote-receipt-${state.txHash.slice(0, 8)}.pdf`);
+    toast.success('Receipt downloaded!');
+  });
 }
 
 export default function VoteConfirmation() {
@@ -133,6 +224,12 @@ export default function VoteConfirmation() {
           transition={{ delay: 0.8 }}
           className="flex flex-col sm:flex-row gap-3 justify-center"
         >
+          <Button
+            variant="outline"
+            onClick={() => generateReceiptPDF(state)}
+          >
+            <Download className="mr-2 h-4 w-4" /> Download Receipt
+          </Button>
           <Button
             variant="outline"
             onClick={() => window.open(getEtherscanUrl(state.txHash), '_blank')}
