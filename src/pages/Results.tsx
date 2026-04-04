@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Trophy, Users, Vote, TrendingUp, ExternalLink, BarChart3 } from 'lucide-react';
+import ExportResults from '@/components/ExportResults';
 import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
