@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock, Eye, Blocks, Vote, BarChart3, ArrowRight, CheckCircle } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 
 const features = [
   { icon: Blocks, title: 'Blockchain Secured', desc: 'Every vote is recorded as an immutable transaction on the Ethereum blockchain.' },
