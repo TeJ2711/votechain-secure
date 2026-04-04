@@ -35,9 +35,7 @@ export default function Login() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="card-glow rounded-2xl p-8">
           <div className="mb-6 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary">
-              <Shield className="h-6 w-6 text-primary-foreground" />
-            </div>
+            <img src={logoImg} alt="Votelytics" className="mx-auto mb-4 h-12 w-auto" />
             <h1 className="text-2xl font-bold">Welcome Back</h1>
             <p className="mt-1 text-sm text-muted-foreground">Sign in to access your dashboard</p>
           </div>
