@@ -39,9 +39,14 @@ export default function Navbar() {
 
   const navActions = (
     <>
-      <Button variant="ghost" size="icon" onClick={toggle} className="shrink-0">
-        {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-      </Button>
+      <button
+        onClick={toggle}
+        className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary shrink-0"
+        title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      >
+        {theme === 'dark' ? <Sun className="h-3.5 w-3.5 text-warning" /> : <Moon className="h-3.5 w-3.5 text-primary" />}
+        <span className="hidden sm:inline">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+      </button>
 
       {user ? (
         <>

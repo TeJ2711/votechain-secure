@@ -106,9 +106,18 @@ export default function Results() {
             'bg-warning/10 text-warning border-warning/20'
           }>{election.status}</Badge>
         </div>
-        <p className="text-muted-foreground mb-8">
-          {totalVotes.toLocaleString()} total votes cast
-        </p>
+        <div className="flex items-center justify-between mb-8">
+          <p className="text-muted-foreground">
+            {totalVotes.toLocaleString()} total votes cast
+          </p>
+          {chartData.length > 0 && (
+            <ExportResults
+              electionTitle={election.title}
+              totalVotes={totalVotes}
+              candidates={chartData}
+            />
+          )}
+        </div>
 
         {/* Winner Banner */}
         {winner && winner.votes > 0 && (

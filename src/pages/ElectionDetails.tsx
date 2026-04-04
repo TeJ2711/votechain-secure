@@ -167,6 +167,7 @@ export default function ElectionDetails() {
                   Back to Dashboard
                 </Button>
               </div>
+              <ElectionFeedback electionId={election.id} />
             </motion.div>
           ) : voting ? (
             <motion.div key="voting-progress" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card-glow rounded-xl p-8 text-center">
