@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, CheckCircle, Loader2, Vote, Users, Shield, Wallet, Blocks, IdCard } from 'lucide-react';
 import { toast } from 'sonner';
+import ElectionFeedback from '@/components/ElectionFeedback';
 
 export default function ElectionDetails() {
   const { id } = useParams<{ id: string }>();
@@ -52,11 +53,42 @@ export default function ElectionDetails() {
     ? dbCandidates.map(c => ({ id: c.id, name: c.name, party: c.party, electionId: c.election_id, voteCount: 0 }))
     : (mockCandidates[id || ''] || []);
 
+  if (!user) {
+    return (
+      <div className="container py-16 text-center">
+        <p className="text-muted-foreground">Please sign in to view election details</p>
+        <Button variant="outline" onClick={() => navigate('/login')} className="mt-4">Sign In</Button>
+      </div>
+    );
+  }
+
   if (!election) {
     return (
       <div className="container py-16 text-center">
         <p className="text-muted-foreground">Election not found</p>
         <Button variant="outline" onClick={() => navigate('/dashboard')} className="mt-4">Go Back</Button>
+      </div>
+    );
+  }
+
+  if (hasVoterId === false && election.status === 'active') {
+    return (
+      <div className="container py-16 max-w-md text-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="card-glow rounded-xl p-8">
+          <IdCard className="h-12 w-12 text-warning mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Voter ID Required</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            You must verify your identity by adding a Voter ID before accessing active elections. This ensures only eligible voters can participate.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="outline" onClick={() => navigate('/dashboard')}>
+              <ArrowLeft className="mr-2 h-4 w-4" /> Dashboard
+            </Button>
+            <Button className="bg-gradient-primary text-primary-foreground" onClick={() => navigate('/profile')}>
+              <IdCard className="mr-2 h-4 w-4" /> Set Voter ID
+            </Button>
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -166,6 +198,7 @@ export default function ElectionDetails() {
                   Back to Dashboard
                 </Button>
               </div>
+              <ElectionFeedback electionId={election.id} />
             </motion.div>
           ) : voting ? (
             <motion.div key="voting-progress" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card-glow rounded-xl p-8 text-center">
