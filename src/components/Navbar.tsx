@@ -3,7 +3,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Shield, LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History, BarChart3 } from 'lucide-react';
+import { LogOut, User, Wallet, Sun, Moon, Menu, LayoutDashboard, ChevronDown, History, BarChart3 } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import NotificationBell from '@/components/NotificationBell';
 import { shortenAddress, connectWallet } from '@/lib/blockchain';
 import { useState } from 'react';
@@ -108,9 +109,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-primary">
-            <Shield className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img src={logoImg} alt="Votelytics" className="h-9 w-auto" />
           <span className="text-xl font-bold tracking-tight">
             Vote<span className="text-gradient">lytics</span>
           </span>
