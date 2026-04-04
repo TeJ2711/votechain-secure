@@ -230,7 +230,7 @@ export default function Landing() {
       <footer className="border-t border-border/50 py-8">
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-primary" />
+            <img src={logoImg} alt="Votelytics" className="h-6 w-auto" />
             <span>Votelytics © 2026</span>
           </div>
           <div className="flex gap-6">
