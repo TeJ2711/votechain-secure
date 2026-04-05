@@ -57,8 +57,12 @@ export default function Profile() {
       .select('avatar_url, voter_id')
       .eq('user_id', user.id)
       .single()
-      .then(({ data }) => {
-        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      .then(async ({ data }) => {
+        if (data?.avatar_url) {
+          const { getSignedAvatarUrl } = await import('@/lib/avatar');
+          const signedUrl = await getSignedAvatarUrl(data.avatar_url);
+          if (signedUrl) setAvatarUrl(signedUrl);
+        }
         if (data?.voter_id) setVoterId(data.voter_id);
       });
   }, [user]);
@@ -142,12 +146,11 @@ export default function Profile() {
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: signedUrlData } = await supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year
 
-      // Add cache-busting param
-      const url = `${publicUrl}?t=${Date.now()}`;
+      const url = signedUrlData?.signedUrl || '';
 
       const { error: updateError } = await supabase
         .from('profiles')

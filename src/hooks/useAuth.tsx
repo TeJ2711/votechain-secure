@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getSignedAvatarUrl } from '@/lib/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
@@ -41,13 +42,19 @@ async function fetchAppUser(supabaseUser: SupabaseUser): Promise<AppUser | null>
 
   const role = (roles && roles.length > 0 ? roles[0].role : 'voter') as UserRole;
 
+  let avatarUrl: string | undefined;
+  if ((profile as any)?.avatar_url) {
+    const signed = await getSignedAvatarUrl((profile as any).avatar_url);
+    avatarUrl = signed || undefined;
+  }
+
   return {
     id: supabaseUser.id,
     name: profile?.name || supabaseUser.user_metadata?.name || '',
     email: supabaseUser.email || '',
     role,
     walletAddress: profile?.wallet_address || undefined,
-    avatarUrl: (profile as any)?.avatar_url || undefined,
+    avatarUrl,
   };
 }
 
