@@ -57,8 +57,12 @@ export default function Profile() {
       .select('avatar_url, voter_id')
       .eq('user_id', user.id)
       .single()
-      .then(({ data }) => {
-        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      .then(async ({ data }) => {
+        if (data?.avatar_url) {
+          const { getSignedAvatarUrl } = await import('@/lib/avatar');
+          const signedUrl = await getSignedAvatarUrl(data.avatar_url);
+          if (signedUrl) setAvatarUrl(signedUrl);
+        }
         if (data?.voter_id) setVoterId(data.voter_id);
       });
   }, [user]);
