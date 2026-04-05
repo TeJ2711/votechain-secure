@@ -142,12 +142,11 @@ export default function Profile() {
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: signedUrlData } = await supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year
 
-      // Add cache-busting param
-      const url = `${publicUrl}?t=${Date.now()}`;
+      const url = signedUrlData?.signedUrl || '';
 
       const { error: updateError } = await supabase
         .from('profiles')
