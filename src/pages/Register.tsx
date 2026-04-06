@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth, UserRole } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { User, Mail, Lock, ArrowRight, IdCard } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,7 +16,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [voterId, setVoterId] = useState('');
-  const [role, setRole] = useState<UserRole>('voter');
+  
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await register(name, email, password, role, voterId || '');
+      await register(name, email, password, 'voter', voterId || '');
       toast.success('Account created! Check your email to verify.');
       navigate('/dashboard');
     } catch (err: any) {
@@ -89,17 +89,6 @@ export default function Register() {
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input id="password" type="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} className="pl-10" required minLength={6} />
               </div>
-            </div>
-            <div>
-              <Label>Role</Label>
-              <Select value={role} onValueChange={(v: UserRole) => setRole(v)}>
-                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="voter">Voter</SelectItem>
-                  <SelectItem value="admin">Admin (Election Authority)</SelectItem>
-                  <SelectItem value="auditor">Auditor / Observer</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <Button type="submit" className="w-full bg-gradient-primary text-primary-foreground" disabled={loading}>
               {loading ? 'Creating...' : 'Create Account'}

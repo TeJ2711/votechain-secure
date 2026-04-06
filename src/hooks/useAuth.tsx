@@ -101,11 +101,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole, voterId: string) => {
+  const register = async (name: string, email: string, password: string, _role: UserRole, voterId: string) => {
+    // Role is always assigned server-side as 'voter' to prevent privilege escalation
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name, role, voter_id: voterId } },
+      options: { data: { name, voter_id: voterId } },
     });
     if (error) throw error;
   };
