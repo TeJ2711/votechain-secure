@@ -1,5 +1,49 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, User, Target, Lock, Cpu, GraduationCap, Briefcase } from 'lucide-react';
+import { ShieldCheck, User, Target, GraduationCap, Briefcase, HelpCircle, Mail, Send } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+const CONTACT_EMAIL = 'support@votelytics.app';
+
+const contactSchema = z.object({
+  name: z.string().trim().min(1, 'Name is required').max(100, 'Name too long'),
+  email: z.string().trim().email('Invalid email').max(255, 'Email too long'),
+  message: z.string().trim().min(5, 'Message is too short').max(1000, 'Message too long'),
+});
+
+const faqs = [
+  {
+    q: 'How does blockchain voting work?',
+    a: 'When you cast a vote, it is cryptographically signed and submitted as a transaction to a blockchain ledger. Each transaction is bundled into a block, hashed, and chained to the previous block. This creates a permanent, distributed record that no single party — not even Votelytics — can secretly modify.',
+  },
+  {
+    q: 'Is my vote anonymous?',
+    a: 'Yes. Your identity is verified once at authentication, but the vote itself is recorded against a one-way cryptographic identifier — never your name, email, or Voter ID. Admins and auditors can verify that a vote is valid and counted, but cannot link any specific ballot back to you.',
+  },
+  {
+    q: 'How is the system tamper-proof?',
+    a: 'Every vote is hashed and linked to the previous one. Changing a single past vote would require recomputing every block after it across all nodes simultaneously — which is computationally infeasible. Auditors can independently verify the entire chain of hashes at any time.',
+  },
+  {
+    q: 'Can I vote more than once?',
+    a: 'No. Database-level unique constraints and on-chain checks prevent any voter from submitting more than one ballot per election, even if they try from multiple devices or sessions.',
+  },
+  {
+    q: 'What happens if I lose my device mid-vote?',
+    a: 'Votes are only finalized after on-chain confirmation. If your session is interrupted before that, no vote is recorded and you can safely retry from another device once you sign back in.',
+  },
+  {
+    q: 'Who can see the results?',
+    a: 'Aggregate results become visible to all voters once an election ends. Auditors can additionally inspect blockchain hashes to independently verify integrity, but individual ballots remain anonymous.',
+  },
+];
+
 
 export default function About() {
   return (
