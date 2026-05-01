@@ -69,26 +69,23 @@ export default function About() {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] grid-pattern">
-      <div className="container max-w-4xl px-4 py-16">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="container max-w-4xl px-4 py-16"
+      >
         {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-14"
-        >
+        <div className="text-center mb-14">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
             About <span className="text-gradient">Votelytics</span>
           </h1>
           <p className="mt-3 text-lg text-muted-foreground">
             Securing the Future of Digital Voting
           </p>
-        </motion.div>
+        </div>
 
         {/* What is Votelytics */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        <section
           className="card-glow rounded-2xl p-6 md:p-8 mb-6 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -118,13 +115,10 @@ export default function About() {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Who Developed It */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        <section
           className="card-glow rounded-2xl p-6 md:p-8 mb-10 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -155,13 +149,10 @@ export default function About() {
               </p>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* FAQ */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
+        <section
           className="card-glow rounded-2xl p-6 md:p-8 mb-6 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -187,13 +178,10 @@ export default function About() {
               </Accordion>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Contact */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.28 }}
+        <section
           className="card-glow rounded-2xl p-6 md:p-8 mb-10 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -264,13 +252,10 @@ export default function About() {
               </form>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Mission */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        <section
           className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-background to-background p-10 md:p-14 text-center shadow-2xl"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.2),transparent_60%)]" />
@@ -285,8 +270,8 @@ export default function About() {
               technology.
             </p>
           </div>
-        </motion.section>
-      </div>
+        </section>
+      </motion.div>
     </div>
   );
 }
