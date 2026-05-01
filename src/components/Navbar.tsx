@@ -120,6 +120,12 @@ export default function Navbar() {
           </span>
         </Link>
 
+        <div className="hidden md:flex items-center gap-5 ml-8 mr-auto">
+          <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            About
+          </Link>
+        </div>
+
         <div className="flex items-center gap-3">
           {navActions}
 
@@ -177,6 +183,9 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
+                    <Button variant="outline" onClick={() => { setOpen(false); navigate('/about'); }}>
+                      About
+                    </Button>
                     <Button variant="outline" asChild onClick={() => setOpen(false)}>
                       <Link to="/login">Sign In</Link>
                     </Button>

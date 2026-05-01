@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import VotingHistory from "./pages/VotingHistory";
 import Analytics from "./pages/Analytics";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/voting-history" element={<VotingHistory />} />
               <Route path="/analytics" element={<Analytics />} />
+              <Route path="/about" element={<About />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
