@@ -46,6 +46,27 @@ const faqs = [
 
 
 export default function About() {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [sending, setSending] = useState(false);
+
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = contactSchema.safeParse(form);
+    if (!result.success) {
+      toast.error(result.error.issues[0].message);
+      return;
+    }
+    setSending(true);
+    const subject = encodeURIComponent(`Votelytics contact from ${result.data.name}`);
+    const body = encodeURIComponent(`${result.data.message}\n\n— ${result.data.name} (${result.data.email})`);
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    setTimeout(() => {
+      setSending(false);
+      toast.success('Opening your email client...');
+      setForm({ name: '', email: '', message: '' });
+    }, 600);
+  };
+
   return (
     <div className="min-h-[calc(100vh-4rem)] grid-pattern">
       <div className="container max-w-4xl px-4 py-16">
@@ -132,6 +153,115 @@ export default function About() {
                 the integrity of fair elections. Her work blends cryptography,
                 blockchain, and thoughtful UX to make democracy stronger in the digital age.
               </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* FAQ */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="card-glow rounded-2xl p-6 md:p-8 mb-6 shadow-lg"
+        >
+          <div className="flex items-start gap-4">
+            <div className="shrink-0 rounded-xl bg-primary/10 p-3 border border-primary/20">
+              <HelpCircle className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-2xl font-semibold mb-1">Voting FAQ</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                How blockchain voting works, and how Votelytics protects anonymity and integrity.
+              </p>
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((f, i) => (
+                  <AccordionItem key={i} value={`item-${i}`}>
+                    <AccordionTrigger className="text-left text-sm font-medium">
+                      {f.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                      {f.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Contact */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+          className="card-glow rounded-2xl p-6 md:p-8 mb-10 shadow-lg"
+        >
+          <div className="flex items-start gap-4">
+            <div className="shrink-0 rounded-xl bg-primary/10 p-3 border border-primary/20">
+              <Mail className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-2xl font-semibold mb-1">Contact Us</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Questions, feedback, or security reports? Reach out at{' '}
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="text-primary hover:underline font-medium"
+                >
+                  {CONTACT_EMAIL}
+                </a>{' '}
+                or send a quick message below.
+              </p>
+              <form onSubmit={handleSend} className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="contact-name">Name</Label>
+                    <Input
+                      id="contact-name"
+                      value={form.name}
+                      onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                      maxLength={100}
+                      placeholder="Your name"
+                      className="mt-1.5"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="contact-email">Email</Label>
+                    <Input
+                      id="contact-email"
+                      type="email"
+                      value={form.email}
+                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                      maxLength={255}
+                      placeholder="you@example.com"
+                      className="mt-1.5"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="contact-message">Message</Label>
+                  <Textarea
+                    id="contact-message"
+                    value={form.message}
+                    onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                    maxLength={1000}
+                    placeholder="How can we help?"
+                    rows={4}
+                    className="mt-1.5"
+                  />
+                  <p className="mt-1 text-xs text-muted-foreground text-right">
+                    {form.message.length}/1000
+                  </p>
+                </div>
+                <Button
+                  type="submit"
+                  disabled={sending}
+                  className="bg-gradient-primary text-primary-foreground"
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  {sending ? 'Sending...' : 'Send Message'}
+                </Button>
+              </form>
             </div>
           </div>
         </motion.section>
