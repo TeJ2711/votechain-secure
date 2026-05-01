@@ -89,7 +89,7 @@ export default function About() {
         </motion.div>
 
         {/* What is Votelytics */}
-        <motion.section
+        <section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -122,10 +122,10 @@ export default function About() {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Who Developed It */}
-        <motion.section
+        <section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -159,10 +159,10 @@ export default function About() {
               </p>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* FAQ */}
-        <motion.section
+        <section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
@@ -191,10 +191,10 @@ export default function About() {
               </Accordion>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Contact */}
-        <motion.section
+        <section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.28 }}
@@ -268,10 +268,10 @@ export default function About() {
               </form>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Mission */}
-        <motion.section
+        <section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -289,7 +289,7 @@ export default function About() {
               technology.
             </p>
           </div>
-        </motion.section>
+        </section>
       </motion.div>
     </div>
   );
