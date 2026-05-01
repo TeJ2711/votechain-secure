@@ -75,24 +75,17 @@ export default function About() {
         className="container max-w-4xl px-4 py-16"
       >
         {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-14"
-        >
+        <div className="text-center mb-14">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
             About <span className="text-gradient">Votelytics</span>
           </h1>
           <p className="mt-3 text-lg text-muted-foreground">
             Securing the Future of Digital Voting
           </p>
-        </motion.div>
+        </div>
 
         {/* What is Votelytics */}
         <section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
           className="card-glow rounded-2xl p-6 md:p-8 mb-6 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -126,9 +119,6 @@ export default function About() {
 
         {/* Who Developed It */}
         <section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
           className="card-glow rounded-2xl p-6 md:p-8 mb-10 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -163,9 +153,6 @@ export default function About() {
 
         {/* FAQ */}
         <section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
           className="card-glow rounded-2xl p-6 md:p-8 mb-6 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -195,9 +182,6 @@ export default function About() {
 
         {/* Contact */}
         <section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.28 }}
           className="card-glow rounded-2xl p-6 md:p-8 mb-10 shadow-lg"
         >
           <div className="flex items-start gap-4">
@@ -272,9 +256,6 @@ export default function About() {
 
         {/* Mission */}
         <section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
           className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-background to-background p-10 md:p-14 text-center shadow-2xl"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary)/0.2),transparent_60%)]" />
