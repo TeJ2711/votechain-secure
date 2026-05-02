@@ -146,19 +146,19 @@ export default function Profile() {
         .upload(filePath, file, { upsert: true });
       if (uploadError) throw uploadError;
 
-      const { data: signedUrlData } = await supabase.storage
-        .from('avatars')
-        .createSignedUrl(filePath, 60 * 60 * 24 * 365); // 1 year
-
-      const url = signedUrlData?.signedUrl || '';
-
+      // Store only the storage path in the database (not a long-lived signed URL)
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: url } as any)
+        .update({ avatar_url: filePath } as any)
         .eq('user_id', user.id);
       if (updateError) throw updateError;
 
-      setAvatarUrl(url);
+      // Generate a fresh short-lived signed URL for immediate display
+      const { data: signedUrlData } = await supabase.storage
+        .from('avatars')
+        .createSignedUrl(filePath, 60 * 60); // 1 hour
+
+      setAvatarUrl(signedUrlData?.signedUrl || '');
       toast.success('Avatar updated!');
     } catch (err: any) {
       toast.error(err.message || 'Failed to upload avatar');
