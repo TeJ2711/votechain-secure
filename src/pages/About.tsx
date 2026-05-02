@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, User, Target, GraduationCap, Briefcase, HelpCircle, Mail, Send } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -76,6 +77,7 @@ export default function About() {
       >
         {/* Hero */}
         <div className="text-center mb-14">
+          <img src={logoImg} alt="Votelytics" className="mx-auto mb-4 h-12 w-auto" />
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
             About <span className="text-gradient">Votelytics</span>
           </h1>
