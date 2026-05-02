@@ -102,7 +102,7 @@ export default function Navbar() {
           <Button variant="ghost" size="sm" asChild>
             <Link to="/login">Sign In</Link>
           </Button>
-          <Button size="sm" className="bg-gradient-primary text-primary-foreground" asChild>
+          <Button variant="ghost" size="sm" asChild>
             <Link to="/register">Get Started</Link>
           </Button>
         </div>
