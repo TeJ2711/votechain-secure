@@ -42,16 +42,6 @@ export default function Landing() {
             A decentralized voting platform for universities and organizations.
             Transparent, immutable, and tamper-proof elections on the blockchain.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="bg-gradient-primary text-primary-foreground px-8" asChild>
-              <Link to="/register">
-                Start Voting <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/login">Sign In</Link>
-            </Button>
-          </div>
         </motion.div>
 
         {/* Floating decoration */}
