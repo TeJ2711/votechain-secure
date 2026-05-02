@@ -120,10 +120,10 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-5 ml-8 mr-auto">
-          <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            About
-          </Link>
+        <div className="hidden md:flex items-center gap-2 ml-8 mr-auto">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/about">About</Link>
+          </Button>
         </div>
 
         <div className="flex items-center gap-3">
