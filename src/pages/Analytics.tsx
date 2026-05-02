@@ -40,9 +40,14 @@ function useAllProfiles() {
 }
 
 export default function Analytics() {
+  const { user, isLoading } = useAuth();
   const { data: elections } = useElections();
   const { data: allVotes } = useAllVotes();
   const { data: profiles } = useAllProfiles();
+
+  if (isLoading) return <div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'voter') return <Navigate to="/dashboard" replace />;
 
   const stats = useMemo(() => {
     const elecs = elections ?? [];
