@@ -1,4 +1,6 @@
 import { useElections, useElectionVotes, useCandidates } from '@/hooks/useElections';
+import { useAuth } from '@/hooks/useAuth';
+import { Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, TrendingUp, Users, Vote, Activity, PieChart as PieIcon } from 'lucide-react';
